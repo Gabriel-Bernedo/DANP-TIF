@@ -1,33 +1,24 @@
-import type { ProductModel } from '../../models/ProductModel';
+import type { IProduct } from '../../models/IProduct';
 import { MoreVertical, Edit2, Trash2, Package } from 'lucide-react';
 import { DataTable, type ColumnDef } from './ui/DataTable';
 
 interface ProductsTableProps {
-  products: ProductModel[];
+  products: IProduct[];
   isLoading: boolean;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 export function ProductsTable({ products, isLoading, onDelete }: ProductsTableProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'in_stock': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'low_stock': return 'bg-orange-100 text-orange-700 border-orange-200';
-      case 'out_of_stock': return 'bg-rose-100 text-rose-700 border-rose-200';
+      case 'Activo': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'Stock Bajo': return 'bg-orange-100 text-orange-700 border-orange-200';
+      case 'Agotado': return 'bg-rose-100 text-rose-700 border-rose-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'in_stock': return 'En Stock';
-      case 'low_stock': return 'Stock Bajo';
-      case 'out_of_stock': return 'Agotado';
-      default: return status;
-    }
-  };
-
-  const columns: ColumnDef<ProductModel>[] = [
+  const columns: ColumnDef<IProduct>[] = [
     {
       header: 'Producto',
       cell: (item) => (
@@ -36,26 +27,26 @@ export function ProductsTable({ products, isLoading, onDelete }: ProductsTablePr
             <Package size={20} />
           </div>
           <div>
-            <div className="font-semibold text-gray-800">{item.name}</div>
-            <div className="text-xs text-gray-500">{item.category}</div>
+            <div className="font-semibold text-gray-800">{item.nombre}</div>
+            <div className="text-xs text-gray-500">Categoría #{item.categoria_id}</div>
           </div>
         </div>
       )
     },
     {
       header: 'Precio',
-      cell: (item) => <span className="font-medium text-gray-700">${item.price.toFixed(2)}</span>
+      cell: (item) => <span className="font-medium text-gray-700">${item.precio_descuento.toFixed(2)}</span>
     },
     {
       header: 'Stock',
-      accessorKey: 'stock',
+      accessorKey: 'cantidad_disponible',
       className: 'font-medium'
     },
     {
       header: 'Estado',
       cell: (item) => (
-        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(item.status)}`}>
-          {getStatusLabel(item.status)}
+        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(item.estado)}`}>
+          {item.estado}
         </span>
       )
     },

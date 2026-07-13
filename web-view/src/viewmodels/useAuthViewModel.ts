@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AuthModel } from '../models/AuthModel';
+import { AuthService } from '../services/AuthService';
 import { useNavigate } from 'react-router-dom';
 
 export function useAuthViewModel() {
@@ -14,10 +14,9 @@ export function useAuthViewModel() {
     setIsLoading(true);
     setError(null);
     try {
-      const user = await AuthModel.login(email, password);
-      // Aqui normalmente guardaríamos el token o user en un contexto/store
+      const user = await AuthService.login(email, password);
       console.log('Logged in user:', user);
-      navigate('/admin');
+      navigate('/admin/productos');
     } catch (err: any) {
       setError(err.message || 'Error en inicio de sesión');
     } finally {

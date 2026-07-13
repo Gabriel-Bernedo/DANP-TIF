@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ProductService, type ProductModel } from '../models/ProductModel';
+import { ProductService } from '../services/ProductService';
+import type { IProduct } from '../models/IProduct';
 
 export function useProductsViewModel() {
-  const [products, setProducts] = useState<ProductModel[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadProducts = useCallback(async () => {
@@ -21,7 +22,7 @@ export function useProductsViewModel() {
     loadProducts();
   }, [loadProducts]);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     setProducts(prev => prev.filter(p => p.id !== id));
   };
 
