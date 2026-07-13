@@ -2,7 +2,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: foodwaste_db
+    container_name: DANP_TIF_DB
     restart: always
     env_file:
       - .env
