@@ -31,14 +31,14 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
             <FileText size={20} />
             Registros
           </Link>
-          <a href="#" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+          <Link to="/admin/users" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
             <Users size={20} />
             Usuarios
-          </a>
-          <a href="#" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+          </Link>
+          <Link to="/admin/products" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
             <Settings size={20} />
-            Configuración
-          </a>
+            Productos
+          </Link>
         </nav>
 
         <div className="p-4 border-t border-gray-100">
