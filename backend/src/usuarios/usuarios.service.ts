@@ -28,7 +28,8 @@ export class UsuariosService {
       },
     });
 
-    const { password_hash: _, ...usuarioSinPassword } = usuario;
+    const usuarioSinPassword = { ...usuario } as Partial<typeof usuario>;
+    delete usuarioSinPassword.password_hash;
     return usuarioSinPassword;
   }
 
