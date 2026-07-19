@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { PedidoService } from '../services/PedidoService';
+import { pedidoService } from '../core/di/container';
 import type { IPedido } from '../models/IPedido';
 
 export function usePedidosViewModel() {
@@ -9,7 +9,7 @@ export function usePedidosViewModel() {
   const loadPedidos = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await PedidoService.getPedidos();
+      const data = await pedidoService.getPedidos();
       setPedidos(data);
     } catch (error) {
       console.error("Error cargando pedidos:", error);

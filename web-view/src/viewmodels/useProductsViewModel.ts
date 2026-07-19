@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ProductService } from '../services/ProductService';
+import { productService } from '../core/di/container';
 import type { IProduct } from '../models/IProduct';
 
 export function useProductsViewModel() {
@@ -9,8 +9,9 @@ export function useProductsViewModel() {
   const loadProducts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await ProductService.getProducts();
+      const data = await productService.getProducts();
       setProducts(data);
+
     } catch (error) {
       console.error("Error cargando productos:", error);
     } finally {

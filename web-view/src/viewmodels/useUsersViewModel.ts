@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { UserService } from '../services/UserService';
+import { userService } from '../core/di/container';
 import type { IUser } from '../models/IUser';
 
 export function useUsersViewModel() {
@@ -9,7 +9,7 @@ export function useUsersViewModel() {
   const loadUsers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await UserService.getUsers();
+      const data = await userService.getUsers();
       setUsers(data);
     } catch (error) {
       console.error("Error cargando usuarios:", error);

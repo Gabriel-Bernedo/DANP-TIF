@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { OfertaService } from '../services/OfertaService';
+import { ofertaService } from '../core/di/container';
 import type { IOferta } from '../models/IOferta';
 
 export function useOfertasViewModel() {
@@ -9,7 +9,7 @@ export function useOfertasViewModel() {
   const loadOfertas = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await OfertaService.getOfertas();
+      const data = await ofertaService.getOfertas();
       setOfertas(data);
     } catch (error) {
       console.error("Error cargando ofertas:", error);
