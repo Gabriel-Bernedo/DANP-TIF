@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CarritoService } from '../services/CarritoService';
+import { carritoService } from '../core/di/container';
 import type { ICarrito } from '../models/ICarrito';
 
 export function useCarritosViewModel() {
@@ -9,7 +9,7 @@ export function useCarritosViewModel() {
   const loadCarritos = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await CarritoService.getCarritos();
+      const data = await carritoService.getCarritos();
       setCarritos(data);
     } catch (error) {
       console.error("Error cargando carritos:", error);

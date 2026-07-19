@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CategoriaService } from '../services/CategoriaService';
+import { categoriaService } from '../core/di/container';
 import type { ICategoria } from '../models/ICategoria';
 
 export function useCategoriasViewModel() {
@@ -9,7 +9,7 @@ export function useCategoriasViewModel() {
   const loadCategorias = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await CategoriaService.getCategorias();
+      const data = await categoriaService.getCategorias();
       setCategorias(data);
     } catch (error) {
       console.error("Error cargando categorías:", error);

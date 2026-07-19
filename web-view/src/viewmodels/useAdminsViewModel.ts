@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AdminService } from '../services/AdminService';
+import { adminService } from '../core/di/container';
 import type { IAdmin } from '../models/IAdmin';
 
 export function useAdminsViewModel() {
@@ -9,7 +9,7 @@ export function useAdminsViewModel() {
   const loadAdmins = useCallback(async () => {
     setIsLoading(true);
     try {
-      const data = await AdminService.getAdmins();
+      const data = await adminService.getAdmins();
       setAdmins(data);
     } catch (error) {
       console.error("Error cargando administradores:", error);

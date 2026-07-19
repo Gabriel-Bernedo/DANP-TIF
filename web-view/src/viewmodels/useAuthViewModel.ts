@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AuthService } from '../services/AuthService';
+import { authService } from '../core/di/container';
 import { useNavigate } from 'react-router-dom';
 
 export function useAuthViewModel() {
@@ -14,7 +14,7 @@ export function useAuthViewModel() {
     setIsLoading(true);
     setError(null);
     try {
-      const user = await AuthService.login(email, password);
+      const user = await authService.login(email, password);
       console.log('Logged in user:', user);
       navigate('/admin/productos');
     } catch (err: any) {
