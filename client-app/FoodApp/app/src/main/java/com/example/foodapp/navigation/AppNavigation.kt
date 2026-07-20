@@ -41,7 +41,7 @@ fun AppNavigation() {
             }
 
             composable(Routes.Carrito.route) {
-                CarritoScreen(navController)
+                CarritoScreen()
             }
 
             composable(Routes.Pedidos.route) {

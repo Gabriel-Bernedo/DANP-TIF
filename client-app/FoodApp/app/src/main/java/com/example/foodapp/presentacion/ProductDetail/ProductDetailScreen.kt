@@ -207,8 +207,9 @@ fun ProductDetailScreen(
                     Button(
 
                         onClick = {
-
-                            // Aquí agregaremos el carrito
+                            viewModel.agregarAlCarrito(
+                                producto.id
+                            )
 
                         },
 

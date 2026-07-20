@@ -11,6 +11,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import android.content.Context
+import com.example.foodapp.data.datastore.TokenManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import com.example.foodapp.data.repository.PedidoRepositoryImpl
+import com.example.foodapp.domain.repository.PedidoRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,8 +23,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideApiService(): ApiService {
-        return RetrofitInstance.api
+    fun provideApiService(
+        retrofitInstance: RetrofitInstance
+    ): ApiService {
+
+        return retrofitInstance.api
+
     }
 
     @Provides
@@ -36,6 +45,25 @@ object AppModule {
         impl: ProductoRepositoryImpl
     ): ProductoRepository {
         return impl
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenManager(
+        @ApplicationContext context: Context
+    ): TokenManager {
+
+        return TokenManager(context)
+
+    }
+    @Provides
+    @Singleton
+    fun providePedidoRepository(
+        impl: PedidoRepositoryImpl
+    ): PedidoRepository {
+
+        return impl
+
     }
 
 }

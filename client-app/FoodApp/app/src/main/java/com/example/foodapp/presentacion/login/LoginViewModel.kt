@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import android.util.Log
+import com.example.foodapp.data.datastore.TokenManager
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
@@ -39,6 +41,17 @@ class LoginViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
 
+                    val token = response.body()?.access_token
+                    if (token != null) {
+
+                        tokenManager.saveToken(token)
+
+                        Log.d(
+                            "TOKEN",
+                            "Token guardado correctamente"
+                        )
+
+                    }
                     Log.d("LOGIN", "Login exitoso")
                     Log.d("LOGIN", response.body().toString())
 
