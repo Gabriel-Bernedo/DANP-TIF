@@ -1,22 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { IUser } from '../../../models/IUser';
 
 interface UserFormProps {
   onSubmit: (data: Partial<IUser>) => Promise<void>;
+  initialData?: IUser;
   onCancel: () => void;
 }
 
-export function UserForm({ onSubmit, onCancel }: UserFormProps) {
+export function UserForm({ onSubmit, onCancel, initialData }: UserFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    nombre: '',
+  const [formData, setFormData] = useState(initialData || { nombre: '',
     apellido: '',
     email: '',
     password_hash: '',
     telefono: '',
     direccion: '',
-    estado: 'activo'
-  });
+    estado: 'activo' });
+
+  useEffect(() => {
+    if (initialData) {
+      // Ensure no null values are passed to inputs
+      const cleanData = { ...initialData };
+      for (const key in cleanData) {
+        if (cleanData[key] === null) {
+          cleanData[key] = '';
+        }
+      }
+      setFormData(cleanData as any);
+    } else {
+      setFormData({ nombre: '',
+    apellido: '',
+    email: '',
+    password_hash: '',
+    telefono: '',
+    direccion: '',
+    estado: 'activo' });
+    }
+  }, [initialData]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,7 +165,7 @@ export function UserForm({ onSubmit, onCancel }: UserFormProps) {
           className="px-4 py-2 text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={isSubmitting || !formData.email || !formData.password_hash}
         >
-          {isSubmitting ? 'Guardando...' : 'Crear Usuario'}
+          {isSubmitting ? 'Guardando...' : initialData ? 'Actualizar' : 'Crear Usuario'}
         </button>
       </div>
     </form>

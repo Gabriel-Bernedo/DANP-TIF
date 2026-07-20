@@ -6,9 +6,10 @@ interface OfertasTableProps {
   ofertas: IOferta[];
   isLoading: boolean;
   onDelete: (id: number) => void;
+  onEdit?: (item: IOferta) => void;
 }
 
-export function OfertasTable({ ofertas, isLoading, onDelete }: OfertasTableProps) {
+export function OfertasTable({ ofertas, isLoading, onDelete, onEdit }: OfertasTableProps) {
   const getStatusBadge = (estado: string) => {
     if(estado === 'Activa') return <span className="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Activa</span>;
     if(estado === 'Programada') return <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">Programada</span>;
@@ -35,7 +36,7 @@ export function OfertasTable({ ofertas, isLoading, onDelete }: OfertasTableProps
       cell: (item) => (
         <div className="flex items-center justify-end gap-2 group">
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18} /></button>
+            <button onClick={() => onEdit?.(item)}  className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18} /></button>
             <button onClick={() => onDelete(item.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar"><Trash2 size={18} /></button>
           </div>
           <button className="p-2 text-gray-400 hover:text-gray-600 group-hover:hidden inline-block"><MoreVertical size={18} /></button>

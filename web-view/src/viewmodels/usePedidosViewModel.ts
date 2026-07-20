@@ -22,8 +22,24 @@ export function usePedidosViewModel() {
     loadPedidos();
   }, [loadPedidos]);
 
-  const handleDelete = (id: number) => {
-    setPedidos(prev => prev.filter(p => p.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await pedidoService.deletePedido(id);
+      setPedidos(prev => prev.filter(c => c.id !== id));
+    } catch(err) {
+      console.error("Error deleting:", err);
+      throw err;
+    }
+  };
+
+  const handleUpdate = async (id: number, data: Partial<IPedido>) => {
+    try {
+      const updated = await pedidoService.updatePedido(id, data);
+      setPedidos(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+    } catch (error) {
+      console.error("Error updating:", error);
+      throw error;
+    }
   };
 
   
@@ -39,6 +55,7 @@ export function usePedidosViewModel() {
 
   return {
     handleCreate,
+    handleUpdate,
     pedidos,
     isLoading,
     handleDelete,

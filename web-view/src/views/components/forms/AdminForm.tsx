@@ -1,19 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { IAdmin } from '../../../models/IAdmin';
 
 interface AdminFormProps {
   onSubmit: (data: Partial<IAdmin>) => Promise<void>;
+  initialData?: IAdmin;
   onCancel: () => void;
 }
 
-export function AdminForm({ onSubmit, onCancel }: AdminFormProps) {
+export function AdminForm({ onSubmit, onCancel, initialData }: AdminFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    nombre: '',
+  const [formData, setFormData] = useState(initialData || { nombre: '',
     email: '',
     password_hash: '',
-    rol: 'gestor_productos'
-  });
+    rol: 'gestor_productos' });
+
+  useEffect(() => {
+    if (initialData) {
+      // Ensure no null values are passed to inputs
+      const cleanData = { ...initialData };
+      for (const key in cleanData) {
+        if (cleanData[key] === null) {
+          cleanData[key] = '';
+        }
+      }
+      setFormData(cleanData as any);
+    } else {
+      setFormData({ nombre: '',
+    email: '',
+    password_hash: '',
+    rol: 'gestor_productos' });
+    }
+  }, [initialData]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +120,7 @@ export function AdminForm({ onSubmit, onCancel }: AdminFormProps) {
           className="px-4 py-2 text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={isSubmitting || !formData.email || !formData.password_hash}
         >
-          {isSubmitting ? 'Guardando...' : 'Crear Administrador'}
+          {isSubmitting ? 'Guardando...' : initialData ? 'Actualizar' : 'Crear Administrador'}
         </button>
       </div>
     </form>

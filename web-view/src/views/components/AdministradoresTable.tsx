@@ -6,9 +6,10 @@ interface AdministradoresTableProps {
   admins: IAdmin[];
   isLoading: boolean;
   onDelete: (id: number) => void;
+  onEdit?: (item: IAdmin) => void;
 }
 
-export function AdministradoresTable({ admins, isLoading, onDelete }: AdministradoresTableProps) {
+export function AdministradoresTable({ admins, isLoading, onDelete, onEdit }: AdministradoresTableProps) {
   const getRoleBadge = (rol: string) => {
     switch (rol) {
       case 'SuperAdmin': 
@@ -39,7 +40,7 @@ export function AdministradoresTable({ admins, isLoading, onDelete }: Administra
       cell: (item) => (
         <div className="flex items-center justify-end gap-2 group">
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18} /></button>
+            <button onClick={() => onEdit?.(item)}  className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18} /></button>
             <button onClick={() => onDelete(item.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar"><Trash2 size={18} /></button>
           </div>
           <button className="p-2 text-gray-400 hover:text-gray-600 group-hover:hidden inline-block"><MoreVertical size={18} /></button>

@@ -22,8 +22,24 @@ export function useCarritosViewModel() {
     loadCarritos();
   }, [loadCarritos]);
 
-  const handleDelete = (id: number) => {
-    setCarritos(prev => prev.filter(c => c.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await carritoService.deleteCarrito(id);
+      setCarritos(prev => prev.filter(c => c.id !== id));
+    } catch(err) {
+      console.error("Error deleting:", err);
+      throw err;
+    }
+  };
+
+  const handleUpdate = async (id: number, data: Partial<ICarrito>) => {
+    try {
+      const updated = await carritoService.updateCarrito(id, data);
+      setCarritos(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+    } catch (error) {
+      console.error("Error updating:", error);
+      throw error;
+    }
   };
 
   
@@ -39,6 +55,7 @@ export function useCarritosViewModel() {
 
   return {
     handleCreate,
+    handleUpdate,
     carritos,
     isLoading,
     handleDelete,

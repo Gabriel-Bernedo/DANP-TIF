@@ -6,9 +6,10 @@ interface UsersTableProps {
   users: IUser[];
   isLoading: boolean;
   onDelete: (id: number) => void;
+  onEdit?: (item: IUser) => void;
 }
 
-export function UsersTable({ users, isLoading, onDelete }: UsersTableProps) {
+export function UsersTable({ users, isLoading, onDelete, onEdit }: UsersTableProps) {
   const columns: ColumnDef<IUser>[] = [
     {
       header: 'Nombre',
@@ -41,7 +42,7 @@ export function UsersTable({ users, isLoading, onDelete }: UsersTableProps) {
       cell: (item) => (
         <div className="flex items-center justify-end gap-2 group">
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar">
+            <button onClick={() => onEdit?.(item)}  className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar">
               <Edit2 size={18} />
             </button>
             <button 
