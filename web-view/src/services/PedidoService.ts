@@ -10,4 +10,8 @@ export class PedidoService {
   async getPedidos(): Promise<IPedido[]> {
     return this.httpClient.get<IPedido[]>('/pedidos');
   }
+
+  async createPedido(data: Partial<IPedido>): Promise<IPedido> {
+    return this.httpClient.post<IPedido>('/pedidos', data);
+  }
 }

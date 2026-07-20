@@ -26,7 +26,19 @@ export function useOfertasViewModel() {
     setOfertas(prev => prev.filter(o => o.id !== id));
   };
 
+  
+  const handleCreate = async (data: Partial<IOferta>) => {
+    try {
+      const created = await ofertaService.createOferta(data);
+      setOfertas(prev => [...prev, created]);
+    } catch (error) {
+      console.error("Error creating:", error);
+      throw error;
+    }
+  };
+
   return {
+    handleCreate,
     ofertas,
     isLoading,
     handleDelete,

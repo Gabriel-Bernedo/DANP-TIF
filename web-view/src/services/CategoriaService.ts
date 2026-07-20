@@ -10,4 +10,8 @@ export class CategoriaService {
   async getCategorias(): Promise<ICategoria[]> {
     return this.httpClient.get<ICategoria[]>('/categorias');
   }
+
+  async createCategoria(data: Partial<ICategoria>): Promise<ICategoria> {
+    return this.httpClient.post<ICategoria>('/categorias', data);
+  }
 }

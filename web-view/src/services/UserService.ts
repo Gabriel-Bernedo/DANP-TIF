@@ -10,4 +10,8 @@ export class UserService {
   async getUsers(): Promise<IUser[]> {
     return this.httpClient.get<IUser[]>('/usuarios');
   }
+
+  async createUser(data: Partial<IUser>): Promise<IUser> {
+    return this.httpClient.post<IUser>('/usuarios', data);
+  }
 }

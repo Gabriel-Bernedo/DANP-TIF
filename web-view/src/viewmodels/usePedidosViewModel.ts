@@ -26,7 +26,19 @@ export function usePedidosViewModel() {
     setPedidos(prev => prev.filter(p => p.id !== id));
   };
 
+  
+  const handleCreate = async (data: Partial<IPedido>) => {
+    try {
+      const created = await pedidoService.createPedido(data);
+      setPedidos(prev => [...prev, created]);
+    } catch (error) {
+      console.error("Error creating:", error);
+      throw error;
+    }
+  };
+
   return {
+    handleCreate,
     pedidos,
     isLoading,
     handleDelete,

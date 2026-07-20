@@ -1,10 +1,19 @@
+import { useState } from 'react';
 import { AdminLayout } from './components/AdminLayout';
 import { AdministradoresTable } from './components/AdministradoresTable';
 import { useAdminsViewModel } from '../viewmodels/useAdminsViewModel';
 import { ShieldPlus } from 'lucide-react';
+import { Modal } from './components/ui/Modal';
+import { AdminForm } from './components/forms/AdminForm';
 
 export function AdministradoresView() {
-  const { admins, isLoading, handleDelete, refresh } = useAdminsViewModel();
+  const { admins, isLoading, handleDelete, refresh, handleCreate } = useAdminsViewModel();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const onSubmit = async (data: any) => {
+    await handleCreate(data);
+    setIsModalOpen(false);
+  };
 
   return (
     <AdminLayout title="Administradores">
@@ -17,13 +26,27 @@ export function AdministradoresView() {
           <button onClick={refresh} className="px-4 py-2 bg-white border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 font-medium transition-colors shadow-sm">
             Actualizar
           </button>
-          <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/30 flex items-center gap-2">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors shadow-sm shadow-blue-500/30 flex items-center gap-2"
+          >
             <ShieldPlus size={18} />
             Nuevo Admin
           </button>
         </div>
       </div>
       <AdministradoresTable admins={admins} isLoading={isLoading} onDelete={handleDelete} />
+
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title="Registrar Nuevo Administrador"
+      >
+        <AdminForm 
+          onSubmit={onSubmit} 
+          onCancel={() => setIsModalOpen(false)} 
+        />
+      </Modal>
     </AdminLayout>
   );
 }

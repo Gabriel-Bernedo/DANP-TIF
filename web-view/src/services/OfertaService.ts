@@ -10,4 +10,8 @@ export class OfertaService {
   async getOfertas(): Promise<IOferta[]> {
     return this.httpClient.get<IOferta[]>('/ofertas');
   }
+
+  async createOferta(data: Partial<IOferta>): Promise<IOferta> {
+    return this.httpClient.post<IOferta>('/ofertas', data);
+  }
 }
