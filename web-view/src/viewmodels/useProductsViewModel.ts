@@ -35,7 +35,7 @@ export function useProductsViewModel() {
 
   const handleUpdate = async (id: number, data: Partial<IProduct>) => {
     try {
-      const updated = await productService.updateProduct(id, data);
+      await productService.updateProduct(id, data);
       setProducts(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error("Error updating:", error);

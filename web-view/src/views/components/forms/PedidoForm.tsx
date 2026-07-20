@@ -23,8 +23,8 @@ export function PedidoForm({ users, onSubmit, onCancel, initialData }: PedidoFor
       // Ensure no null values are passed to inputs
       const cleanData = { ...initialData };
       for (const key in cleanData) {
-        if (cleanData[key] === null) {
-          cleanData[key] = '';
+        if ((cleanData as any)[key] === null) {
+          (cleanData as any)[key] = '';
         }
       }
       setFormData(cleanData as any);
@@ -45,8 +45,8 @@ export function PedidoForm({ users, onSubmit, onCancel, initialData }: PedidoFor
     try {
       const payload: Partial<IPedido> = {
         ...formData,
-        usuario_id: parseInt(formData.usuario_id, 10),
-        total: parseFloat(formData.total),
+        usuario_id: parseInt(formData.usuario_id.toString(), 10),
+        total: parseFloat(formData.total.toString()),
         fecha_entrega_estimada: formData.fecha_entrega_estimada ? new Date(formData.fecha_entrega_estimada).toISOString() : undefined
       };
       await onSubmit(payload);

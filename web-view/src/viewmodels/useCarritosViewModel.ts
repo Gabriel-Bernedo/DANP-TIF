@@ -34,7 +34,7 @@ export function useCarritosViewModel() {
 
   const handleUpdate = async (id: number, data: Partial<ICarrito>) => {
     try {
-      const updated = await carritoService.updateCarrito(id, data);
+      await carritoService.updateCarrito(id, data);
       setCarritos(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error("Error updating:", error);

@@ -34,7 +34,7 @@ export function useCategoriasViewModel() {
 
   const handleUpdate = async (id: number, data: Partial<ICategoria>) => {
     try {
-      const updated = await categoriaService.updateCategoria(id, data);
+      await categoriaService.updateCategoria(id, data);
       setCategorias(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error("Error updating:", error);

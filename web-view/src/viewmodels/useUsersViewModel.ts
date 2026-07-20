@@ -34,7 +34,7 @@ export function useUsersViewModel() {
 
   const handleUpdate = async (id: number, data: Partial<IUser>) => {
     try {
-      const updated = await userService.updateUser(id, data);
+      await userService.updateUser(id, data);
       setUsers(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error("Error updating:", error);
