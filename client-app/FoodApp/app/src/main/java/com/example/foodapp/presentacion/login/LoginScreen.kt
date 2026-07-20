@@ -16,14 +16,21 @@ import com.example.foodapp.navigation.Routes
 import com.example.foodapp.presentacion.components.CustomTextField
 import com.example.foodapp.presentacion.components.PasswordTextField
 import com.example.foodapp.presentacion.components.PrimaryButton
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun LoginScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val loginSuccess by viewModel.loginSuccess.collectAsState()
 
     Column(
         modifier = Modifier
@@ -65,10 +72,38 @@ fun LoginScreen(
         PrimaryButton(
             text = "Iniciar sesión",
             onClick = {
-                // Luego aquí llamaremos al ViewModel
+
+                viewModel.login(
+                    email,
+                    password
+                )
+
             }
         )
 
+        if (error.isNotEmpty()) {
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error
+            )
+
+        }
+        LaunchedEffect(loginSuccess) {
+
+            if (loginSuccess) {
+
+                navController.navigate(Routes.Home.route) {
+                    popUpTo(Routes.Login.route) {
+                        inclusive = true
+                    }
+                }
+
+            }
+
+        }
         Spacer(modifier = Modifier.height(24.dp))
 
         Row {
