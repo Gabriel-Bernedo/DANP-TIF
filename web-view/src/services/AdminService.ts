@@ -14,4 +14,13 @@ export class AdminService {
   async createAdmin(data: Partial<IAdmin>): Promise<IAdmin> {
     return this.httpClient.post<IAdmin>('/administradores', data);
   }
+
+  async updateAdmin(id: number, data: Partial<IAdmin>): Promise<IAdmin> {
+    return this.httpClient.patch<IAdmin>(`/administradores/${id}`, data);
+  }
+
+  async deleteAdmin(id: number): Promise<void> {
+    return this.httpClient.delete<void>(`/administradores/${id}`);
+  }
+
 }

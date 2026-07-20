@@ -14,4 +14,13 @@ export class UserService {
   async createUser(data: Partial<IUser>): Promise<IUser> {
     return this.httpClient.post<IUser>('/usuarios', data);
   }
+
+  async updateUser(id: number, data: Partial<IUser>): Promise<IUser> {
+    return this.httpClient.patch<IUser>(`/users/${id}`, data);
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    return this.httpClient.delete<void>(`/users/${id}`);
+  }
+
 }

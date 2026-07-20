@@ -18,8 +18,12 @@ export class ProductService {
   async getProduct(id: number): Promise<IProduct> {
     return this.httpClient.get<IProduct>(`/productos/${id}`);
   }
+  async updateProduct(id: number, data: Partial<IProduct>): Promise<IProduct> {
+    return this.httpClient.patch<IProduct>(`/productos/${id}`, data);
+  }
 
   async deleteProduct(id: number): Promise<void> {
     return this.httpClient.delete<void>(`/productos/${id}`);
   }
+
 }
