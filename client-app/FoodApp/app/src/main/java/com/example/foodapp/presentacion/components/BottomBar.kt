@@ -1,18 +1,21 @@
-package com.example.foodapp.presentacion.components
+package com.example.foodapp.presentation.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.foodapp.navigation.Routes
 
 @Composable
 fun BottomBar(
-    navController: NavController
+    navController: NavHostController
 ) {
 
     NavigationBar {
@@ -23,7 +26,7 @@ fun BottomBar(
                 navController.navigate(Routes.Home.route)
             },
             icon = {
-                Icon(Icons.Default.Home, contentDescription = "Inicio")
+                Icon(Icons.Default.Home, null)
             },
             label = {
                 Text("Inicio")
@@ -36,7 +39,7 @@ fun BottomBar(
                 navController.navigate(Routes.Carrito.route)
             },
             icon = {
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito")
+                Icon(Icons.Default.ShoppingCart, null)
             },
             label = {
                 Text("Carrito")
@@ -49,7 +52,7 @@ fun BottomBar(
                 navController.navigate(Routes.Pedidos.route)
             },
             icon = {
-                Icon(Icons.Default.Receipt, contentDescription = "Pedidos")
+                Icon(Icons.Default.Receipt, null)
             },
             label = {
                 Text("Pedidos")
@@ -59,10 +62,10 @@ fun BottomBar(
         NavigationBarItem(
             selected = false,
             onClick = {
-
+                navController.navigate(Routes.Profile.route)
             },
             icon = {
-                Icon(Icons.Default.Person, contentDescription = "Perfil")
+                Icon(Icons.Default.Person, null)
             },
             label = {
                 Text("Perfil")
