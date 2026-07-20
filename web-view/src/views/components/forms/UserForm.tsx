@@ -22,8 +22,8 @@ export function UserForm({ onSubmit, onCancel, initialData }: UserFormProps) {
       // Ensure no null values are passed to inputs
       const cleanData = { ...initialData };
       for (const key in cleanData) {
-        if (cleanData[key] === null) {
-          cleanData[key] = '';
+        if ((cleanData as any)[key] === null) {
+          (cleanData as any)[key] = '';
         }
       }
       setFormData(cleanData as any);

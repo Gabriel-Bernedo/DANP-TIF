@@ -34,7 +34,7 @@ export function usePedidosViewModel() {
 
   const handleUpdate = async (id: number, data: Partial<IPedido>) => {
     try {
-      const updated = await pedidoService.updatePedido(id, data);
+      await pedidoService.updatePedido(id, data);
       setPedidos(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error("Error updating:", error);

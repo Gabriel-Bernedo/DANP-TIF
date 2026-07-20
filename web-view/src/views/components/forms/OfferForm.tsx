@@ -22,8 +22,8 @@ export function OfferForm({ products, onSubmit, onCancel, initialData }: OfferFo
       // Ensure no null values are passed to inputs
       const cleanData = { ...initialData };
       for (const key in cleanData) {
-        if (cleanData[key] === null) {
-          cleanData[key] = '';
+        if ((cleanData as any)[key] === null) {
+          (cleanData as any)[key] = '';
         }
       }
       setFormData(cleanData as any);
@@ -43,8 +43,8 @@ export function OfferForm({ products, onSubmit, onCancel, initialData }: OfferFo
     try {
       const payload: Partial<IOferta> = {
         ...formData,
-        producto_id: parseInt(formData.producto_id, 10),
-        porcentaje_descuento: parseFloat(formData.porcentaje_descuento),
+        producto_id: parseInt(formData.producto_id.toString(), 10),
+        porcentaje_descuento: parseFloat(formData.porcentaje_descuento.toString()),
         fecha_inicio: new Date(formData.fecha_inicio).toISOString(),
         fecha_fin: new Date(formData.fecha_fin).toISOString()
       };

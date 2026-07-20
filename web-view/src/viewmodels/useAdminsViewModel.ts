@@ -34,7 +34,7 @@ export function useAdminsViewModel() {
 
   const handleUpdate = async (id: number, data: Partial<IAdmin>) => {
     try {
-      const updated = await adminService.updateAdmin(id, data);
+      await adminService.updateAdmin(id, data);
       setAdmins(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error("Error updating:", error);

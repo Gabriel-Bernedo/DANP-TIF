@@ -10,7 +10,7 @@ import { ConfirmModal } from './components/ui/ConfirmModal';
 import { CarritoForm } from './components/forms/CarritoForm';
 
 export function CarritosView() {
-  const { carritos, isLoading, refresh, handleCreate, handleUpdate } = useCarritosViewModel();
+  const { carritos, isLoading, refresh, handleCreate, handleUpdate, handleDelete } = useCarritosViewModel();
   const { users } = useUsersViewModel();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -75,7 +75,7 @@ export function CarritosView() {
           </button>
         </div>
       </div>
-      <CarritosTable carritos={carritos} isLoading={isLoading} onViewDetails={handleViewDetails} />
+      <CarritosTable carritos={carritos} isLoading={isLoading} onViewDetails={handleViewDetails} onEdit={openEdit} onDelete={openDelete} />
 
       <Modal 
         isOpen={isModalOpen} 

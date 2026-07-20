@@ -10,7 +10,7 @@ import { ConfirmModal } from './components/ui/ConfirmModal';
 import { PedidoForm } from './components/forms/PedidoForm';
 
 export function PedidosView() {
-  const { pedidos, isLoading, refresh, handleCreate, handleUpdate } = usePedidosViewModel();
+  const { pedidos, isLoading, refresh, handleCreate, handleUpdate, handleDelete } = usePedidosViewModel();
   const { users } = useUsersViewModel();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -75,7 +75,7 @@ export function PedidosView() {
           </button>
         </div>
       </div>
-      <PedidosTable pedidos={pedidos} isLoading={isLoading} onViewDetails={handleViewDetails} />
+      <PedidosTable pedidos={pedidos} isLoading={isLoading} onViewDetails={handleViewDetails} onEdit={openEdit} onDelete={openDelete} />
 
       <Modal 
         isOpen={isModalOpen} 

@@ -19,8 +19,8 @@ export function CarritoForm({ users, onSubmit, onCancel, initialData }: CarritoF
       // Ensure no null values are passed to inputs
       const cleanData = { ...initialData };
       for (const key in cleanData) {
-        if (cleanData[key] === null) {
-          cleanData[key] = '';
+        if ((cleanData as any)[key] === null) {
+          (cleanData as any)[key] = '';
         }
       }
       setFormData(cleanData as any);
@@ -37,7 +37,7 @@ export function CarritoForm({ users, onSubmit, onCancel, initialData }: CarritoF
     try {
       const payload: Partial<ICarrito> = {
         ...formData,
-        usuario_id: parseInt(formData.usuario_id, 10),
+        usuario_id: parseInt(formData.usuario_id.toString(), 10),
       };
       await onSubmit(payload);
     } catch (error) {

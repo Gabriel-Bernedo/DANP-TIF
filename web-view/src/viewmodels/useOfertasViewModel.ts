@@ -34,7 +34,7 @@ export function useOfertasViewModel() {
 
   const handleUpdate = async (id: number, data: Partial<IOferta>) => {
     try {
-      const updated = await ofertaService.updateOferta(id, data);
+      await ofertaService.updateOferta(id, data);
       setOfertas(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
     } catch (error) {
       console.error("Error updating:", error);

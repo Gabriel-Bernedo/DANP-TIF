@@ -68,11 +68,11 @@ const handleSubmit = async (e: React.FormEvent) => {
     try {
       const payload: Partial<IProduct> = {
         ...formData,
-        precio_original: parseFloat(formData.precio_original),
-        precio_descuento: formData.precio_descuento ? parseFloat(formData.precio_descuento) : undefined,
-        cantidad_disponible: parseInt(formData.cantidad_disponible, 10),
-        categoria_id: parseInt(formData.categoria_id, 10),
-        administrador_id: parseInt(formData.administrador_id, 10),
+        precio_original: parseFloat(formData.precio_original.toString()),
+        precio_descuento: formData.precio_descuento ? parseFloat(formData.precio_descuento.toString()) : undefined,
+        cantidad_disponible: parseInt(formData.cantidad_disponible.toString(), 10),
+        categoria_id: parseInt(formData.categoria_id.toString(), 10),
+        administrador_id: parseInt(formData.administrador_id.toString(), 10),
         // Send date as ISO string if present
         fecha_vencimiento: formData.fecha_vencimiento ? new Date(formData.fecha_vencimiento).toISOString() : undefined
       };
