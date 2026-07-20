@@ -35,7 +35,16 @@ export function ProductsTable({ products, isLoading, onDelete }: ProductsTablePr
     },
     {
       header: 'Precio',
-      cell: (item) => <span className="font-medium text-gray-700">${item.precio_descuento.toFixed(2)}</span>
+      cell: (item) => (
+        <div className="flex flex-col">
+          <span className="font-medium text-gray-700">
+            ${item.precio_descuento != null ? Number(item.precio_descuento).toFixed(2) : Number(item.precio_original).toFixed(2)}
+          </span>
+          {item.precio_descuento != null && (
+            <span className="text-xs text-gray-400 line-through">${Number(item.precio_original).toFixed(2)}</span>
+          )}
+        </div>
+      )
     },
     {
       header: 'Stock',

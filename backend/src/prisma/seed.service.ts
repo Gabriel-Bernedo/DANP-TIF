@@ -13,30 +13,42 @@ export class SeedService implements OnApplicationBootstrap {
   constructor(private readonly prisma: PrismaService) {}
 
   async onApplicationBootstrap() {
-    // Check if seeding is requested. Defaults to false if not provided or anything other than 'true'
     const trySeed = process.env.TRY_SEED === 'true';
+    const seedForce = process.env.SEED_FORCE === 'true';
 
-    if (!trySeed) {
-      this.logger.log('TRY_SEED is false or not set. Skipping database seed.');
+    if (!trySeed && !seedForce) {
+      this.logger.log('TRY_SEED and SEED_FORCE are false or not set. Skipping database seed.');
       return;
     }
 
-    this.logger.log('TRY_SEED is true. Checking if database needs to be populated...');
-
     try {
-      // Check for a test record to determine if DB is already seeded
-      const testEmail = 'admin@admin.com';
-      const existingAdmin = await this.prisma.administrador.findUnique({
-        where: { email: testEmail },
-      });
+      if (seedForce) {
+        this.logger.log('SEED_FORCE is true. Wiping database...');
+        // Delete in cascade order
+        await this.prisma.pedidoDetalle.deleteMany();
+        await this.prisma.pedido.deleteMany();
+        await this.prisma.carritoDetalle.deleteMany();
+        await this.prisma.carrito.deleteMany();
+        await this.prisma.ofertaEspecial.deleteMany();
+        await this.prisma.producto.deleteMany();
+        await this.prisma.categoria.deleteMany();
+        await this.prisma.usuario.deleteMany();
+        await this.prisma.administrador.deleteMany();
+        this.logger.log('Database wiped successfully.');
+      } else {
+        this.logger.log('TRY_SEED is true. Checking if database needs to be populated...');
+        const testEmail = 'admin@admin.com';
+        const existingAdmin = await this.prisma.administrador.findUnique({
+          where: { email: testEmail },
+        });
 
-      if (existingAdmin) {
-        this.logger.log(`Test record (${testEmail}) already exists. Bulk insert skipped.`);
-        return;
+        if (existingAdmin) {
+          this.logger.log(`Test record (${testEmail}) already exists. Bulk insert skipped.`);
+          return;
+        }
+        this.logger.log('Test record not found. Running seed...');
       }
 
-      this.logger.log('Test record not found. Running seed...');
-      
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash('admin', saltRounds);
 
@@ -58,70 +70,81 @@ export class SeedService implements OnApplicationBootstrap {
         skipDuplicates: true,
       });
 
-      // Fetch references for relational data
       const admin = await this.prisma.administrador.findFirst({ where: { email: 'admin@admin.com' } });
-      const frutasCat = await this.prisma.categoria.findFirst({ where: { nombre: 'Frutas y Verduras' } });
-      const lacteosCat = await this.prisma.categoria.findFirst({ where: { nombre: 'Lácteos' } });
-      const panaderiaCat = await this.prisma.categoria.findFirst({ where: { nombre: 'Panadería' } });
-      const gaboUser = await this.prisma.usuario.findFirst({ where: { email: 'gabo@example.com' } });
+      const categorias = await this.prisma.categoria.findMany();
+      const usuarios = await this.prisma.usuario.findMany();
 
-      if (admin && frutasCat && lacteosCat && panaderiaCat) {
+      if (admin && categorias.length === 5) {
         // Seed Productos
-        const productosData = getProductosData(admin.id, frutasCat.id, lacteosCat.id, panaderiaCat.id);
+        const catIds = categorias.map(c => c.id);
+        const productosData = getProductosData(admin.id, catIds);
         await this.prisma.producto.createMany({
           data: productosData,
           skipDuplicates: true,
         });
 
-        const prodManzanas = await this.prisma.producto.findFirst({ where: { nombre: 'Manzanas Orgánicas (1kg)' } });
-        const prodQueso = await this.prisma.producto.findFirst({ where: { nombre: 'Queso Fresco (500g)' } });
-
-        if (prodManzanas && prodQueso) {
-          // Seed Ofertas
-          const ofertasData = getOfertasData(prodManzanas.id, prodQueso.id);
+        const productosDB = await this.prisma.producto.findMany();
+        if (productosDB.length > 0) {
+          const productIds = productosDB.map(p => p.id);
+          const ofertasData = getOfertasData(productIds);
           await this.prisma.ofertaEspecial.createMany({
             data: ofertasData,
             skipDuplicates: true,
           });
 
-          if (gaboUser) {
-            // Seed Carrito (relaciones anidadas)
-            await this.prisma.carrito.create({
-              data: {
-                usuario_id: gaboUser.id,
-                estado: 'activo',
-                carrito_detalle: {
-                  create: [
-                    { producto_id: prodManzanas.id, cantidad: 2, precio_unitario: 2.5 },
-                    { producto_id: prodQueso.id, cantidad: 1, precio_unitario: 4.0 },
-                  ]
-                }
-              }
-            });
+          // Create 2 Carts and Orders for each user
+          for (const user of usuarios) {
+            for (let i = 0; i < 2; i++) {
+              // Pick 2 random products for the cart
+              const p1 = productosDB[Math.floor(Math.random() * productosDB.length)];
+              const p2 = productosDB[Math.floor(Math.random() * productosDB.length)];
+              
+              const p1Price = Number(p1.precio_descuento || p1.precio_original);
+              const p2Price = Number(p2.precio_descuento || p2.precio_original);
+              const qty1 = Math.floor(Math.random() * 3) + 1;
+              const qty2 = Math.floor(Math.random() * 2) + 1;
+              
+              const total = (p1Price * qty1) + (p2Price * qty2);
 
-            // Seed Pedido (relaciones anidadas)
-            await this.prisma.pedido.create({
-              data: {
-                usuario_id: gaboUser.id,
-                direccion_entrega: gaboUser.direccion,
-                metodo_pago: 'Tarjeta',
-                estado: 'pendiente',
-                total: 9.0, // 2*2.5 + 1*4.0 = 5 + 4
-                pedido_detalle: {
-                  create: [
-                    { producto_id: prodManzanas.id, cantidad: 2, precio_unitario: 2.5, subtotal: 5.0 },
-                    { producto_id: prodQueso.id, cantidad: 1, precio_unitario: 4.0, subtotal: 4.0 },
-                  ]
+              // Create Carrito
+              await this.prisma.carrito.create({
+                data: {
+                  usuario_id: user.id,
+                  estado: 'activo',
+                  carrito_detalle: {
+                    create: [
+                      { producto_id: p1.id, cantidad: qty1, precio_unitario: p1Price },
+                      { producto_id: p2.id, cantidad: qty2, precio_unitario: p2Price },
+                    ]
+                  }
                 }
-              }
-            });
+              });
+
+              // Create Pedido
+              await this.prisma.pedido.create({
+                data: {
+                  usuario_id: user.id,
+                  direccion_entrega: user.direccion,
+                  metodo_pago: i % 2 === 0 ? 'Tarjeta' : 'Efectivo',
+                  estado: i % 2 === 0 ? 'completado' : 'pendiente',
+                  total: total,
+                  pedido_detalle: {
+                    create: [
+                      { producto_id: p1.id, cantidad: qty1, precio_unitario: p1Price, subtotal: p1Price * qty1 },
+                      { producto_id: p2.id, cantidad: qty2, precio_unitario: p2Price, subtotal: p2Price * qty2 },
+                    ]
+                  }
+                }
+              });
+            }
           }
         }
       }
 
-      this.logger.log('Database successfully seeded!');
+      this.logger.log('Database successfully seeded with expanded data!');
     } catch (error) {
       this.logger.error('Error while trying to seed the database:', error);
     }
   }
+}}
 }
