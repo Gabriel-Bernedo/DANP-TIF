@@ -63,7 +63,7 @@ export const categoriasData = [
 ];
 
 export const getProductosData = (adminId: number, categoriaIds: number[]) => {
-  const productos = [];
+  const productos: any[] = [];
   const categoriasNombres = ['Frutas', 'Lácteos', 'Panadería', 'Carnes', 'Bebidas'];
   
   for (let i = 0; i < categoriaIds.length; i++) {
@@ -92,7 +92,7 @@ export const getProductosData = (adminId: number, categoriaIds: number[]) => {
 };
 
 export const getOfertasData = (productosIds: number[]) => {
-  const ofertas = [];
+  const ofertas: any[] = [];
   const shuffled = [...productosIds].sort(() => 0.5 - Math.random());
   const selectedIds = shuffled.slice(0, 10);
   
