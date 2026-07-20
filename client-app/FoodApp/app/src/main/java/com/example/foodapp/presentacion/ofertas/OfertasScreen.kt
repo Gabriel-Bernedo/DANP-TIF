@@ -1,4 +1,4 @@
-package com.example.foodapp.presentation.ofertas
+package com.example.foodapp.presentacion.ofertas
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

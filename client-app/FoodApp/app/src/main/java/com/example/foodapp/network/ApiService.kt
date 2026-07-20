@@ -6,6 +6,8 @@ import com.example.foodapp.data.model.RegisterRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.GET
+import com.example.foodapp.data.model.Producto
 
 interface ApiService {
 
@@ -18,4 +20,7 @@ interface ApiService {
     suspend fun register(
         @Body request: RegisterRequest
     ): Response<Unit>
+
+    @GET("productos")
+    suspend fun getProductos(): Response<List<Producto>>
 }

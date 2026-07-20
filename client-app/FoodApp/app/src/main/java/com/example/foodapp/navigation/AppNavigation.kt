@@ -9,12 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.foodapp.presentacion.login.LoginScreen
 import com.example.foodapp.presentacion.register.RegisterScreen
-import com.example.foodapp.presentation.carrito.CarritoScreen
-import com.example.foodapp.presentation.components.BottomBar
-import com.example.foodapp.presentation.home.HomeScreen
-import com.example.foodapp.presentation.ofertas.OfertasScreen
-import com.example.foodapp.presentation.pedidos.PedidosScreen
-import com.example.foodapp.presentation.profile.ProfileScreen
+import com.example.foodapp.presentacion.carrito.CarritoScreen
+import com.example.foodapp.presentacion.components.BottomBar
+import com.example.foodapp.presentacion.home.HomeScreen
+import com.example.foodapp.presentacion.ofertas.OfertasScreen
+import com.example.foodapp.presentacion.pedidos.PedidosScreen
+import com.example.foodapp.presentacion.profile.ProfileScreen
 
 @Composable
 fun AppNavigation() {
@@ -36,7 +36,7 @@ fun AppNavigation() {
         ) {
 
             composable(Routes.Home.route) {
-                HomeScreen(navController)
+                HomeScreen()
             }
 
             composable(Routes.Carrito.route) {

@@ -1,4 +1,10 @@
 package com.example.foodapp.domain.repository
 
-class ProductoRepository {
+import com.example.foodapp.data.model.Producto
+import retrofit2.Response
+
+interface ProductoRepository {
+
+    suspend fun getProductos(): Response<List<Producto>>
+
 }
