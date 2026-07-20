@@ -1,4 +1,15 @@
 package com.example.foodapp.presentacion.pedidos
 
-class PedidosState {
-}
+
+import com.example.foodapp.data.model.Pedido
+
+
+data class PedidoState(
+
+    val pedidos: List<Pedido> = emptyList(),
+
+    val isLoading:Boolean = false,
+
+    val error:String? = null
+
+)

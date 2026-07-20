@@ -1,19 +1,42 @@
 package com.example.foodapp.network
 
+
+import com.example.foodapp.data.datastore.TokenManager
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object RetrofitInstance {
 
-    private const val BASE_URL = "http://10.0.2.2:3000/"
 
-    val retrofit: Retrofit by lazy {
+@Singleton
+class RetrofitInstance @Inject constructor(
+    private val tokenManager: TokenManager
+) {
 
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
 
-    }
+    private val BASE_URL =
+        "https://danp.api.auroboros.lat/"
+
+
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(
+            AuthInterceptor(tokenManager)
+        )
+        .build()
+
+
+
+    val api: ApiService = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(client)
+        .addConverterFactory(
+            GsonConverterFactory.create()
+        )
+        .build()
+        .create(ApiService::class.java)
+
 
 }

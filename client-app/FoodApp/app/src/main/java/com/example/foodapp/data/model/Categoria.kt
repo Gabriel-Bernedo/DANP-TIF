@@ -1,4 +1,7 @@
 package com.example.foodapp.data.model
 
-class Categoria {
-}
+data class Categoria(
+    val id: Int,
+    val nombre: String,
+    val descripcion: String
+)
