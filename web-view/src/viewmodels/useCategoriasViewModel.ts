@@ -26,7 +26,19 @@ export function useCategoriasViewModel() {
     setCategorias(prev => prev.filter(c => c.id !== id));
   };
 
+  
+  const handleCreate = async (data: Partial<ICategoria>) => {
+    try {
+      const created = await categoriaService.createCategoria(data);
+      setCategorias(prev => [...prev, created]);
+    } catch (error) {
+      console.error("Error creating:", error);
+      throw error;
+    }
+  };
+
   return {
+    handleCreate,
     categorias,
     isLoading,
     handleDelete,

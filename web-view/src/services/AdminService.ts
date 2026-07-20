@@ -10,4 +10,8 @@ export class AdminService {
   async getAdmins(): Promise<IAdmin[]> {
     return this.httpClient.get<IAdmin[]>('/administradores');
   }
+
+  async createAdmin(data: Partial<IAdmin>): Promise<IAdmin> {
+    return this.httpClient.post<IAdmin>('/administradores', data);
+  }
 }

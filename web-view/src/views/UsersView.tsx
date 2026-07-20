@@ -1,10 +1,19 @@
+import { useState } from 'react';
 import { AdminLayout } from './components/AdminLayout';
 import { UsersTable } from './components/UsersTable';
 import { useUsersViewModel } from '../viewmodels/useUsersViewModel';
 import { UserPlus } from 'lucide-react';
+import { Modal } from './components/ui/Modal';
+import { UserForm } from './components/forms/UserForm';
 
 export function UsersView() {
-  const { users, isLoading, handleDelete, refresh } = useUsersViewModel();
+  const { users, isLoading, handleDelete, refresh, handleCreate } = useUsersViewModel();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const onSubmit = async (data: any) => {
+    await handleCreate(data);
+    setIsModalOpen(false);
+  };
 
   return (
     <AdminLayout title="Gestión de Usuarios">
@@ -21,7 +30,10 @@ export function UsersView() {
           >
             Actualizar
           </button>
-          <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors shadow-sm shadow-indigo-500/30 flex items-center gap-2">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors shadow-sm shadow-indigo-500/30 flex items-center gap-2"
+          >
             <UserPlus size={18} />
             Invitar Usuario
           </button>
@@ -33,6 +45,17 @@ export function UsersView() {
         isLoading={isLoading} 
         onDelete={handleDelete} 
       />
+
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title="Registrar Nuevo Usuario"
+      >
+        <UserForm 
+          onSubmit={onSubmit} 
+          onCancel={() => setIsModalOpen(false)} 
+        />
+      </Modal>
     </AdminLayout>
   );
 }

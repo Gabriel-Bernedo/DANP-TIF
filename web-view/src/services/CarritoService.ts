@@ -10,4 +10,8 @@ export class CarritoService {
   async getCarritos(): Promise<ICarrito[]> {
     return this.httpClient.get<ICarrito[]>('/carrito');
   }
+
+  async createCarrito(data: Partial<ICarrito>): Promise<ICarrito> {
+    return this.httpClient.post<ICarrito>('/carritos', data);
+  }
 }

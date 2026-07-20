@@ -26,7 +26,19 @@ export function useAdminsViewModel() {
     setAdmins(prev => prev.filter(a => a.id !== id));
   };
 
+  
+  const handleCreate = async (data: Partial<IAdmin>) => {
+    try {
+      const created = await adminService.createAdmin(data);
+      setAdmins(prev => [...prev, created]);
+    } catch (error) {
+      console.error("Error creating:", error);
+      throw error;
+    }
+  };
+
   return {
+    handleCreate,
     admins,
     isLoading,
     handleDelete,

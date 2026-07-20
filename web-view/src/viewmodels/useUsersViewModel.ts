@@ -26,7 +26,19 @@ export function useUsersViewModel() {
     setUsers(prev => prev.filter(u => u.id !== id));
   };
 
+  
+  const handleCreate = async (data: Partial<IUser>) => {
+    try {
+      const created = await userService.createUser(data);
+      setUsers(prev => [...prev, created]);
+    } catch (error) {
+      console.error("Error creating:", error);
+      throw error;
+    }
+  };
+
   return {
+    handleCreate,
     users,
     isLoading,
     handleDelete,

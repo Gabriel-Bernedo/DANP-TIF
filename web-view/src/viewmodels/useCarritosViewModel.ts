@@ -26,7 +26,19 @@ export function useCarritosViewModel() {
     setCarritos(prev => prev.filter(c => c.id !== id));
   };
 
+  
+  const handleCreate = async (data: Partial<ICarrito>) => {
+    try {
+      const created = await carritoService.createCarrito(data);
+      setCarritos(prev => [...prev, created]);
+    } catch (error) {
+      console.error("Error creating:", error);
+      throw error;
+    }
+  };
+
   return {
+    handleCreate,
     carritos,
     isLoading,
     handleDelete,
