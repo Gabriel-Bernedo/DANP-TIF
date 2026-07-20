@@ -14,4 +14,13 @@ export class PedidoService {
   async createPedido(data: Partial<IPedido>): Promise<IPedido> {
     return this.httpClient.post<IPedido>('/pedidos', data);
   }
+
+  async updatePedido(id: number, data: Partial<IPedido>): Promise<IPedido> {
+    return this.httpClient.patch<IPedido>(`/pedidos/${id}`, data);
+  }
+
+  async deletePedido(id: number): Promise<void> {
+    return this.httpClient.delete<void>(`/pedidos/${id}`);
+  }
+
 }

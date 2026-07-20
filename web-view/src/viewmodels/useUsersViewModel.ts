@@ -22,8 +22,24 @@ export function useUsersViewModel() {
     loadUsers();
   }, [loadUsers]);
 
-  const handleDelete = (id: number) => {
-    setUsers(prev => prev.filter(u => u.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await userService.deleteUser(id);
+      setUsers(prev => prev.filter(c => c.id !== id));
+    } catch(err) {
+      console.error("Error deleting:", err);
+      throw err;
+    }
+  };
+
+  const handleUpdate = async (id: number, data: Partial<IUser>) => {
+    try {
+      const updated = await userService.updateUser(id, data);
+      setUsers(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+    } catch (error) {
+      console.error("Error updating:", error);
+      throw error;
+    }
   };
 
   
@@ -39,6 +55,7 @@ export function useUsersViewModel() {
 
   return {
     handleCreate,
+    handleUpdate,
     users,
     isLoading,
     handleDelete,

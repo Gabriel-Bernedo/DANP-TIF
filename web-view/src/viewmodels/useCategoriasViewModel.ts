@@ -22,8 +22,24 @@ export function useCategoriasViewModel() {
     loadCategorias();
   }, [loadCategorias]);
 
-  const handleDelete = (id: number) => {
-    setCategorias(prev => prev.filter(c => c.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await categoriaService.deleteCategoria(id);
+      setCategorias(prev => prev.filter(c => c.id !== id));
+    } catch(err) {
+      console.error("Error deleting:", err);
+      throw err;
+    }
+  };
+
+  const handleUpdate = async (id: number, data: Partial<ICategoria>) => {
+    try {
+      const updated = await categoriaService.updateCategoria(id, data);
+      setCategorias(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+    } catch (error) {
+      console.error("Error updating:", error);
+      throw error;
+    }
   };
 
   
@@ -39,6 +55,7 @@ export function useCategoriasViewModel() {
 
   return {
     handleCreate,
+    handleUpdate,
     categorias,
     isLoading,
     handleDelete,

@@ -1,22 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { IOferta } from '../../../models/IOferta';
 import type { IProduct } from '../../../models/IProduct';
 
 interface OfferFormProps {
   products: IProduct[];
   onSubmit: (data: Partial<IOferta>) => Promise<void>;
+  initialData?: IOferta;
   onCancel: () => void;
 }
 
-export function OfferForm({ products, onSubmit, onCancel }: OfferFormProps) {
+export function OfferForm({ products, onSubmit, onCancel, initialData }: OfferFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    producto_id: '',
+  const [formData, setFormData] = useState(initialData || { producto_id: '',
     porcentaje_descuento: '',
     fecha_inicio: '',
     fecha_fin: '',
-    estado: 'activa'
-  });
+    estado: 'activa' });
+
+  useEffect(() => {
+    if (initialData) {
+      // Ensure no null values are passed to inputs
+      const cleanData = { ...initialData };
+      for (const key in cleanData) {
+        if (cleanData[key] === null) {
+          cleanData[key] = '';
+        }
+      }
+      setFormData(cleanData as any);
+    } else {
+      setFormData({ producto_id: '',
+    porcentaje_descuento: '',
+    fecha_inicio: '',
+    fecha_fin: '',
+    estado: 'activa' });
+    }
+  }, [initialData]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,7 +155,7 @@ export function OfferForm({ products, onSubmit, onCancel }: OfferFormProps) {
           className="px-4 py-2 text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={isSubmitting || !formData.producto_id || !formData.porcentaje_descuento}
         >
-          {isSubmitting ? 'Guardando...' : 'Crear Oferta'}
+          {isSubmitting ? 'Guardando...' : initialData ? 'Actualizar' : 'Crear Oferta'}
         </button>
       </div>
     </form>

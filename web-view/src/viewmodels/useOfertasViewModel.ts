@@ -22,8 +22,24 @@ export function useOfertasViewModel() {
     loadOfertas();
   }, [loadOfertas]);
 
-  const handleDelete = (id: number) => {
-    setOfertas(prev => prev.filter(o => o.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await ofertaService.deleteOferta(id);
+      setOfertas(prev => prev.filter(c => c.id !== id));
+    } catch(err) {
+      console.error("Error deleting:", err);
+      throw err;
+    }
+  };
+
+  const handleUpdate = async (id: number, data: Partial<IOferta>) => {
+    try {
+      const updated = await ofertaService.updateOferta(id, data);
+      setOfertas(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+    } catch (error) {
+      console.error("Error updating:", error);
+      throw error;
+    }
   };
 
   
@@ -39,6 +55,7 @@ export function useOfertasViewModel() {
 
   return {
     handleCreate,
+    handleUpdate,
     ofertas,
     isLoading,
     handleDelete,

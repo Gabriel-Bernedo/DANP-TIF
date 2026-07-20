@@ -1,16 +1,44 @@
 import { useState } from 'react';
+import type { ICarrito } from '../models/ICarrito';
 import { AdminLayout } from './components/AdminLayout';
 import { CarritosTable } from './components/CarritosTable';
 import { useCarritosViewModel } from '../viewmodels/useCarritosViewModel';
 import { useUsersViewModel } from '../viewmodels/useUsersViewModel';
 import { Plus } from 'lucide-react';
 import { Modal } from './components/ui/Modal';
+import { ConfirmModal } from './components/ui/ConfirmModal';
 import { CarritoForm } from './components/forms/CarritoForm';
 
 export function CarritosView() {
-  const { carritos, isLoading, refresh, handleCreate } = useCarritosViewModel();
+  const { carritos, isLoading, refresh, handleCreate, handleUpdate } = useCarritosViewModel();
   const { users } = useUsersViewModel();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<ICarrito | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const openCreate = () => {
+    setItemToEdit(null);
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (item: ICarrito) => {
+    setItemToEdit(item);
+    setIsModalOpen(true);
+  };
+
+  const openDelete = (id: number) => {
+    setItemToDelete(id);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete !== null) {
+      await handleDelete(itemToDelete);
+      setIsConfirmOpen(false);
+      setItemToDelete(null);
+    }
+  };
 
   const handleViewDetails = (id: number) => {
     console.log("Ver detalles del carrito", id);
@@ -18,8 +46,13 @@ export function CarritosView() {
   };
 
   const onSubmit = async (data: any) => {
-    await handleCreate(data);
+    if (itemToEdit) {
+      await handleUpdate(itemToEdit.id, data);
+    } else {
+      await handleCreate(data);
+    }
     setIsModalOpen(false);
+    setItemToEdit(null);
   };
 
   return (
@@ -34,7 +67,7 @@ export function CarritosView() {
             Actualizar
           </button>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={openCreate}
             className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2"
           >
             <Plus size={18} />
@@ -44,10 +77,10 @@ export function CarritosView() {
       </div>
       <CarritosTable carritos={carritos} isLoading={isLoading} onViewDetails={handleViewDetails} />
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Crear Nuevo Carrito"
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        title={itemToEdit ? "Editar Elemento" : "Crear Nuevo Carrito"}
       >
         <CarritoForm
           users={users}
@@ -55,6 +88,14 @@ export function CarritosView() {
           onCancel={() => setIsModalOpen(false)}
         />
       </Modal>
+    
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer."
+      />
     </AdminLayout>
   );
 }

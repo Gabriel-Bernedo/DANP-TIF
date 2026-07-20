@@ -1,17 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ICategoria } from '../../../models/ICategoria';
 
 interface CategoryFormProps {
   onSubmit: (data: Partial<ICategoria>) => Promise<void>;
+  initialData?: ICategoria;
   onCancel: () => void;
 }
 
-export function CategoryForm({ onSubmit, onCancel }: CategoryFormProps) {
+export function CategoryForm({ onSubmit, onCancel, initialData }: CategoryFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: ''
-  });
+  const [formData, setFormData] = useState(initialData || { nombre: '',
+    descripcion: '' });
+
+  useEffect(() => {
+    if (initialData) {
+      // Ensure no null values are passed to inputs
+      const cleanData = { ...initialData };
+      for (const key in cleanData) {
+        if (cleanData[key] === null) {
+          cleanData[key] = '';
+        }
+      }
+      setFormData(cleanData as any);
+    } else {
+      setFormData({ nombre: '',
+    descripcion: '' });
+    }
+  }, [initialData]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +89,7 @@ export function CategoryForm({ onSubmit, onCancel }: CategoryFormProps) {
           className="px-4 py-2 text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={isSubmitting || !formData.nombre.trim()}
         >
-          {isSubmitting ? 'Guardando...' : 'Crear Categoría'}
+          {isSubmitting ? 'Guardando...' : initialData ? 'Actualizar' : 'Crear Categoría'}
         </button>
       </div>
     </form>

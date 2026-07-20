@@ -6,9 +6,10 @@ interface CategoriasTableProps {
   categorias: ICategoria[];
   isLoading: boolean;
   onDelete: (id: number) => void;
+  onEdit?: (item: ICategoria) => void;
 }
 
-export function CategoriasTable({ categorias, isLoading, onDelete }: CategoriasTableProps) {
+export function CategoriasTable({ categorias, isLoading, onDelete, onEdit }: CategoriasTableProps) {
   const columns: ColumnDef<ICategoria>[] = [
     {
       header: 'Nombre',
@@ -28,7 +29,7 @@ export function CategoriasTable({ categorias, isLoading, onDelete }: CategoriasT
       cell: (item) => (
         <div className="flex items-center justify-end gap-2 group">
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18} /></button>
+            <button onClick={() => onEdit?.(item)}  className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18} /></button>
             <button onClick={() => onDelete(item.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar"><Trash2 size={18} /></button>
           </div>
           <button className="p-2 text-gray-400 hover:text-gray-600 group-hover:hidden inline-block"><MoreVertical size={18} /></button>

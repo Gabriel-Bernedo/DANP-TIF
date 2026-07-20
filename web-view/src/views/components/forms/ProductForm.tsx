@@ -1,28 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { IProduct } from '../../../models/IProduct';
 import type { ICategoria } from '../../../models/ICategoria';
 
 interface ProductFormProps {
   categories: ICategoria[];
   onSubmit: (data: Partial<IProduct>) => Promise<void>;
+  initialData?: IProduct;
   onCancel: () => void;
 }
 
-export function ProductForm({ categories, onSubmit, onCancel }: ProductFormProps) {
+export function ProductForm({ categories, onSubmit, onCancel, initialData }: ProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    precio_original: '',
-    precio_descuento: '',
-    cantidad_disponible: '0',
-    fecha_vencimiento: '',
-    estado: 'disponible',
-    categoria_id: '',
-    administrador_id: '1' // Default admin for demo purposes
+    nombre: initialData?.nombre || '',
+    descripcion: initialData?.descripcion || '',
+    precio_original: initialData?.precio_original?.toString() || '',
+    precio_descuento: initialData?.precio_descuento?.toString() || '',
+    cantidad_disponible: initialData?.cantidad_disponible?.toString() || '0',
+    fecha_vencimiento: initialData?.fecha_vencimiento 
+      ? (typeof initialData.fecha_vencimiento === 'string' && initialData.fecha_vencimiento.includes('T') 
+          ? initialData.fecha_vencimiento.split('T')[0] 
+          : new Date(initialData.fecha_vencimiento).toISOString().split('T')[0])
+      : '',
+    imagen_url: initialData?.imagen_url || '',
+    estado: initialData?.estado || 'disponible',
+    categoria_id: initialData?.categoria_id?.toString() || '',
+    administrador_id: initialData?.administrador_id?.toString() || '1'
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        nombre: initialData.nombre || '',
+        descripcion: initialData.descripcion || '',
+        precio_original: initialData.precio_original?.toString() || '',
+        precio_descuento: initialData.precio_descuento?.toString() || '',
+        cantidad_disponible: initialData.cantidad_disponible?.toString() || '0',
+        fecha_vencimiento: initialData.fecha_vencimiento 
+          ? (typeof initialData.fecha_vencimiento === 'string' && initialData.fecha_vencimiento.includes('T') 
+              ? initialData.fecha_vencimiento.split('T')[0] 
+              : new Date(initialData.fecha_vencimiento).toISOString().split('T')[0])
+          : '',
+        imagen_url: initialData.imagen_url || '',
+        estado: initialData.estado || 'disponible',
+        categoria_id: initialData.categoria_id?.toString() || '',
+        administrador_id: initialData.administrador_id?.toString() || '1'
+      });
+    } else {
+      setFormData({
+        nombre: '',
+        descripcion: '',
+        precio_original: '',
+        precio_descuento: '',
+        cantidad_disponible: '0',
+        fecha_vencimiento: '',
+        imagen_url: '',
+        estado: 'disponible',
+        categoria_id: '',
+        administrador_id: '1'
+      });
+    }
+  }, [initialData]);
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
@@ -33,8 +73,8 @@ export function ProductForm({ categories, onSubmit, onCancel }: ProductFormProps
         cantidad_disponible: parseInt(formData.cantidad_disponible, 10),
         categoria_id: parseInt(formData.categoria_id, 10),
         administrador_id: parseInt(formData.administrador_id, 10),
-        // Send date as ISO string if needed, or leave as YYYY-MM-DD
-        fecha_vencimiento: new Date(formData.fecha_vencimiento).toISOString()
+        // Send date as ISO string if present
+        fecha_vencimiento: formData.fecha_vencimiento ? new Date(formData.fecha_vencimiento).toISOString() : undefined
       };
       await onSubmit(payload);
     } catch (error) {
@@ -141,6 +181,19 @@ export function ProductForm({ categories, onSubmit, onCancel }: ProductFormProps
           />
         </div>
 
+        <div className="md:col-span-2">
+          <label htmlFor="imagen_url" className="block text-sm font-medium text-gray-700 mb-1">URL de la Imagen</label>
+          <input
+            type="url"
+            id="imagen_url"
+            name="imagen_url"
+            value={formData.imagen_url}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+            placeholder="https://ejemplo.com/imagen.jpg"
+          />
+        </div>
+
         <div>
           <label htmlFor="categoria_id" className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
           <select
@@ -188,7 +241,7 @@ export function ProductForm({ categories, onSubmit, onCancel }: ProductFormProps
           className="px-4 py-2 text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={isSubmitting || !formData.nombre.trim() || !formData.categoria_id}
         >
-          {isSubmitting ? 'Guardando...' : 'Crear Producto'}
+          {isSubmitting ? 'Guardando...' : initialData ? 'Actualizar' : 'Crear Producto'}
         </button>
       </div>
     </form>

@@ -14,4 +14,13 @@ export class OfertaService {
   async createOferta(data: Partial<IOferta>): Promise<IOferta> {
     return this.httpClient.post<IOferta>('/ofertas', data);
   }
+
+  async updateOferta(id: number, data: Partial<IOferta>): Promise<IOferta> {
+    return this.httpClient.patch<IOferta>(`/ofertas/${id}`, data);
+  }
+
+  async deleteOferta(id: number): Promise<void> {
+    return this.httpClient.delete<void>(`/ofertas/${id}`);
+  }
+
 }

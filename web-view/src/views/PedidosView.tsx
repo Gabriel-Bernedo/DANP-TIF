@@ -1,16 +1,44 @@
 import { useState } from 'react';
+import type { IPedido } from '../models/IPedido';
 import { AdminLayout } from './components/AdminLayout';
 import { PedidosTable } from './components/PedidosTable';
 import { usePedidosViewModel } from '../viewmodels/usePedidosViewModel';
 import { useUsersViewModel } from '../viewmodels/useUsersViewModel';
 import { Plus } from 'lucide-react';
 import { Modal } from './components/ui/Modal';
+import { ConfirmModal } from './components/ui/ConfirmModal';
 import { PedidoForm } from './components/forms/PedidoForm';
 
 export function PedidosView() {
-  const { pedidos, isLoading, refresh, handleCreate } = usePedidosViewModel();
+  const { pedidos, isLoading, refresh, handleCreate, handleUpdate } = usePedidosViewModel();
   const { users } = useUsersViewModel();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<IPedido | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const openCreate = () => {
+    setItemToEdit(null);
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (item: IPedido) => {
+    setItemToEdit(item);
+    setIsModalOpen(true);
+  };
+
+  const openDelete = (id: number) => {
+    setItemToDelete(id);
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete !== null) {
+      await handleDelete(itemToDelete);
+      setIsConfirmOpen(false);
+      setItemToDelete(null);
+    }
+  };
 
   const handleViewDetails = (id: number) => {
     console.log("Ver detalles del pedido", id);
@@ -18,8 +46,13 @@ export function PedidosView() {
   };
 
   const onSubmit = async (data: any) => {
-    await handleCreate(data);
+    if (itemToEdit) {
+      await handleUpdate(itemToEdit.id, data);
+    } else {
+      await handleCreate(data);
+    }
     setIsModalOpen(false);
+    setItemToEdit(null);
   };
 
   return (
@@ -34,7 +67,7 @@ export function PedidosView() {
             Actualizar
           </button>
           <button 
-            onClick={() => setIsModalOpen(true)}
+            onClick={openCreate}
             className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-medium transition-colors shadow-sm shadow-amber-500/30 flex items-center gap-2"
           >
             <Plus size={18} />
@@ -47,7 +80,7 @@ export function PedidosView() {
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        title="Crear Nuevo Pedido Base"
+        title={itemToEdit ? "Editar Elemento" : "Crear Nuevo Pedido Base"}
       >
         <PedidoForm 
           users={users}
@@ -55,6 +88,14 @@ export function PedidosView() {
           onCancel={() => setIsModalOpen(false)} 
         />
       </Modal>
+    
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={confirmDelete}
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de que deseas eliminar este elemento? Esta acción no se puede deshacer."
+      />
     </AdminLayout>
   );
 }

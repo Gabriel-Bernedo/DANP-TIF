@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ICarrito } from '../../../models/ICarrito';
 import type { IUser } from '../../../models/IUser';
 
 interface CarritoFormProps {
   users: IUser[];
   onSubmit: (data: Partial<ICarrito>) => Promise<void>;
+  initialData?: ICarrito;
   onCancel: () => void;
 }
 
-export function CarritoForm({ users, onSubmit, onCancel }: CarritoFormProps) {
+export function CarritoForm({ users, onSubmit, onCancel, initialData }: CarritoFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    usuario_id: '',
-    estado: 'activo'
-  });
+  const [formData, setFormData] = useState(initialData || { usuario_id: '',
+    estado: 'activo' });
+
+  useEffect(() => {
+    if (initialData) {
+      // Ensure no null values are passed to inputs
+      const cleanData = { ...initialData };
+      for (const key in cleanData) {
+        if (cleanData[key] === null) {
+          cleanData[key] = '';
+        }
+      }
+      setFormData(cleanData as any);
+    } else {
+      setFormData({ usuario_id: '',
+    estado: 'activo' });
+    }
+  }, [initialData]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +104,7 @@ export function CarritoForm({ users, onSubmit, onCancel }: CarritoFormProps) {
           className="px-4 py-2 text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={isSubmitting || !formData.usuario_id}
         >
-          {isSubmitting ? 'Guardando...' : 'Crear Carrito'}
+          {isSubmitting ? 'Guardando...' : initialData ? 'Actualizar' : 'Crear Carrito'}
         </button>
       </div>
     </form>

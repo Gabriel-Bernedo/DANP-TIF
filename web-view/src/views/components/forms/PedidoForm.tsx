@@ -1,23 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { IPedido } from '../../../models/IPedido';
 import type { IUser } from '../../../models/IUser';
 
 interface PedidoFormProps {
   users: IUser[];
   onSubmit: (data: Partial<IPedido>) => Promise<void>;
+  initialData?: IPedido;
   onCancel: () => void;
 }
 
-export function PedidoForm({ users, onSubmit, onCancel }: PedidoFormProps) {
+export function PedidoForm({ users, onSubmit, onCancel, initialData }: PedidoFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    usuario_id: '',
+  const [formData, setFormData] = useState(initialData || { usuario_id: '',
     fecha_entrega_estimada: '',
     direccion_entrega: '',
     metodo_pago: 'Tarjeta',
     estado: 'pendiente',
-    total: ''
-  });
+    total: '' });
+
+  useEffect(() => {
+    if (initialData) {
+      // Ensure no null values are passed to inputs
+      const cleanData = { ...initialData };
+      for (const key in cleanData) {
+        if (cleanData[key] === null) {
+          cleanData[key] = '';
+        }
+      }
+      setFormData(cleanData as any);
+    } else {
+      setFormData({ usuario_id: '',
+    fecha_entrega_estimada: '',
+    direccion_entrega: '',
+    metodo_pago: 'Tarjeta',
+    estado: 'pendiente',
+    total: '' });
+    }
+  }, [initialData]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,7 +172,7 @@ export function PedidoForm({ users, onSubmit, onCancel }: PedidoFormProps) {
           className="px-4 py-2 text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-500/30 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           disabled={isSubmitting || !formData.usuario_id || !formData.total || !formData.direccion_entrega}
         >
-          {isSubmitting ? 'Guardando...' : 'Crear Pedido'}
+          {isSubmitting ? 'Guardando...' : initialData ? 'Actualizar' : 'Crear Pedido'}
         </button>
       </div>
     </form>

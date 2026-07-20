@@ -22,8 +22,24 @@ export function useAdminsViewModel() {
     loadAdmins();
   }, [loadAdmins]);
 
-  const handleDelete = (id: number) => {
-    setAdmins(prev => prev.filter(a => a.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await adminService.deleteAdmin(id);
+      setAdmins(prev => prev.filter(c => c.id !== id));
+    } catch(err) {
+      console.error("Error deleting:", err);
+      throw err;
+    }
+  };
+
+  const handleUpdate = async (id: number, data: Partial<IAdmin>) => {
+    try {
+      const updated = await adminService.updateAdmin(id, data);
+      setAdmins(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+    } catch (error) {
+      console.error("Error updating:", error);
+      throw error;
+    }
   };
 
   
@@ -39,6 +55,7 @@ export function useAdminsViewModel() {
 
   return {
     handleCreate,
+    handleUpdate,
     admins,
     isLoading,
     handleDelete,

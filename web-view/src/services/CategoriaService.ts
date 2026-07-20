@@ -14,4 +14,13 @@ export class CategoriaService {
   async createCategoria(data: Partial<ICategoria>): Promise<ICategoria> {
     return this.httpClient.post<ICategoria>('/categorias', data);
   }
+
+  async updateCategoria(id: number, data: Partial<ICategoria>): Promise<ICategoria> {
+    return this.httpClient.patch<ICategoria>(`/categorias/${id}`, data);
+  }
+
+  async deleteCategoria(id: number): Promise<void> {
+    return this.httpClient.delete<void>(`/categorias/${id}`);
+  }
+
 }

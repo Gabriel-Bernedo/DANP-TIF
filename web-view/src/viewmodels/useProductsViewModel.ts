@@ -23,8 +23,24 @@ export function useProductsViewModel() {
     loadProducts();
   }, [loadProducts]);
 
-  const handleDelete = (id: number) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await productService.deleteProduct(id);
+      setProducts(prev => prev.filter(c => c.id !== id));
+    } catch(err) {
+      console.error("Error deleting:", err);
+      throw err;
+    }
+  };
+
+  const handleUpdate = async (id: number, data: Partial<IProduct>) => {
+    try {
+      const updated = await productService.updateProduct(id, data);
+      setProducts(prev => prev.map(c => c.id === id ? { ...c, ...data } : c));
+    } catch (error) {
+      console.error("Error updating:", error);
+      throw error;
+    }
   };
 
   
@@ -40,6 +56,7 @@ export function useProductsViewModel() {
 
   return {
     handleCreate,
+    handleUpdate,
     products,
     isLoading,
     handleDelete,
