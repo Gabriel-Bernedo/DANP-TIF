@@ -146,5 +146,4 @@ export class SeedService implements OnApplicationBootstrap {
       this.logger.error('Error while trying to seed the database:', error);
     }
   }
-}}
 }
