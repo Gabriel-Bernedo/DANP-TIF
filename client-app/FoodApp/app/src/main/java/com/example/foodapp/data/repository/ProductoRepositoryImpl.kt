@@ -14,4 +14,10 @@ class ProductoRepositoryImpl @Inject constructor(
         return api.getProductos()
     }
 
+    override suspend fun getProductoById(
+        id: Int
+    ): Response<Producto> {
+        return api.getProductoById(id)
+    }
+
 }

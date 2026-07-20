@@ -9,17 +9,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.foodapp.data.model.Producto
+import androidx.compose.foundation.clickable
 
 
 @Composable
 fun ProductCard(
-    producto: Producto
+    producto: Producto,
+    onClick: () -> Unit
 ) {
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable {
+                onClick()
+            }
     ) {
 
         Column(

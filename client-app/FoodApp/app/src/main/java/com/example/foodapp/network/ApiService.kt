@@ -8,6 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.GET
 import com.example.foodapp.data.model.Producto
+import retrofit2.http.Path
 
 interface ApiService {
 
@@ -23,4 +24,11 @@ interface ApiService {
 
     @GET("productos")
     suspend fun getProductos(): Response<List<Producto>>
+
+    @GET("productos/{id}")
+    suspend fun getProductoById(
+        @Path("id") id: Int
+    ): Response<Producto>
+
+
 }

@@ -15,6 +15,7 @@ import com.example.foodapp.presentacion.home.HomeScreen
 import com.example.foodapp.presentacion.ofertas.OfertasScreen
 import com.example.foodapp.presentacion.pedidos.PedidosScreen
 import com.example.foodapp.presentacion.profile.ProfileScreen
+import com.example.foodapp.presentacion.ProductDetail.ProductDetailScreen
 
 @Composable
 fun AppNavigation() {
@@ -36,7 +37,7 @@ fun AppNavigation() {
         ) {
 
             composable(Routes.Home.route) {
-                HomeScreen()
+                HomeScreen(navController)
             }
 
             composable(Routes.Carrito.route) {
@@ -62,8 +63,21 @@ fun AppNavigation() {
                 RegisterScreen(navController)
             }
 
+            composable(
+                Routes.ProductDetail.route
+            ) { backStackEntry ->
+
+
+                val productId =
+                    backStackEntry.arguments?.getString("productId")
+
+
+                ProductDetailScreen(
+                    productId = productId ?: "",
+                    navController = navController
+                )
+
+            }
         }
-
     }
-
 }

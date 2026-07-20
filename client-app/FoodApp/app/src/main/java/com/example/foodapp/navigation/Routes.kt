@@ -18,4 +18,6 @@ sealed class Routes(val route: String) {
 
     object Profile : Routes("profile")
 
+    object ProductDetail : Routes("product_detail/{productId}")
+
 }

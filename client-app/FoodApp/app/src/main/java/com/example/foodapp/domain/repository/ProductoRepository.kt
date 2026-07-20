@@ -6,5 +6,8 @@ import retrofit2.Response
 interface ProductoRepository {
 
     suspend fun getProductos(): Response<List<Producto>>
+    suspend fun getProductoById(
+        id: Int
+    ): Response<Producto>
 
 }

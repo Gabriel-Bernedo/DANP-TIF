@@ -15,12 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.foodapp.presentacion.components.ProductCard
 import com.example.foodapp.presentacion.home.HomeViewModel
 
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -188,16 +190,20 @@ fun HomeScreen(
 
                 LazyColumn {
 
-                    items(uiState.productos){ producto ->
-
+                    items(uiState.productos) { producto ->
 
                         ProductCard(
-                            producto = producto
+                            producto = producto,
+                            onClick = {
+
+                                navController.navigate(
+                                    "product_detail/${producto.id}"
+                                )
+
+                            }
                         )
 
-
                     }
-
 
                 }
 
