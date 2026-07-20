@@ -32,6 +32,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public"
       JWT_SECRET: ${JWT_SECRET}
+      TRY_SEED: ${TRY_SEED:-false}
     expose:
       - "3000"
     depends_on:
