@@ -34,7 +34,7 @@ export function PedidosTable({ pedidos, isLoading, onViewDetails }: PedidosTable
       )
     },
     { header: 'Estado', cell: (item) => getStatusBadge(item.estado) },
-    { header: 'Total', cell: (item) => <span className="font-bold text-gray-800">${item.total.toFixed(2)}</span> },
+    { header: 'Total', cell: (item) => <span className="font-bold text-gray-800">${Number(item.total).toFixed(2)}</span> },
     {
       header: 'Acciones',
       className: 'text-right',

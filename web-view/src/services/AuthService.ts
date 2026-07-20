@@ -8,11 +8,11 @@ export class AuthService {
   }
 
   async login(email: string, password: string): Promise<IAdmin> {
-    const response = await this.httpClient.post<{ admin: IAdmin, access_token: string }>('/auth/login', { email, password });
+    const response = await this.httpClient.post<{ administrador: IAdmin, access_token: string }>('/auth/login-admin', { email, password });
     if (response.access_token) {
       localStorage.setItem('token', response.access_token);
     }
-    return response.admin;
+    return response.administrador;
   }
 }
 
