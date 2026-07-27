@@ -1,21 +1,26 @@
 package com.example.foodapp.presentacion.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.foodapp.data.model.Producto
-import androidx.compose.foundation.clickable
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import com.example.foodapp.ui.theme.FoodBlack
+import com.example.foodapp.ui.theme.FoodGreen
+import com.example.foodapp.ui.theme.FoodGray
+
 
 @Composable
 fun ProductCard(
@@ -24,114 +29,323 @@ fun ProductCard(
     onAgregarCarrito: (Int, Int) -> Unit
 ) {
 
+
     var cantidad by remember {
         mutableIntStateOf(1)
     }
 
+
+
     Card(
+
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
                 onClick()
-            }
+            },
+
+
+        shape = RoundedCornerShape(24.dp),
+
+
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+
+
     ) {
 
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+
+        Column {
+            // IMAGEN
 
             AsyncImage(
-                model = producto.imagen_url,
+                model = producto.imagen_url
+                    ?: "https://i.pinimg.com/236x/2a/c1/c2/2ac1c2a02e15def63c7632fa359b3014.jpg",
                 contentDescription = producto.nombre,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp),
                 contentScale = ContentScale.Crop
+
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
 
-            Text(producto.nombre)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Column(
 
-            Text(producto.descripcion)
+                modifier = Modifier
+                    .padding(16.dp)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            ){
 
-            Text("Antes: S/. ${producto.precio_original}")
 
-            Text("Oferta: S/. ${producto.precio_descuento}")
-
-            Text("Disponible: ${producto.cantidad_disponible}")
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-
-                Button(
-                    onClick = {
-
-                        if (cantidad > 1) {
-                            cantidad--
-                        }
-
-                    }
-                ) {
-
-                    Text("-")
-
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
+                // NOMBRE
 
                 Text(
-                    text = cantidad.toString(),
+
+                    text = producto.nombre,
+
                     style = MaterialTheme.typography.titleLarge
+
                 )
 
-                Spacer(modifier = Modifier.width(16.dp))
 
-                Button(
-                    onClick = {
 
-                        if (cantidad < producto.cantidad_disponible) {
-                            cantidad++
+                Spacer(
+                    modifier = Modifier.height(6.dp)
+                )
+
+
+
+                // DESCRIPCION
+
+                Text(
+
+                    text = producto.descripcion,
+
+                    style = MaterialTheme.typography.bodyMedium,
+
+                    color = FoodGray,
+
+                    maxLines = 2
+
+                )
+
+
+
+                Spacer(
+                    modifier = Modifier.height(12.dp)
+                )
+
+
+
+                // PRECIOS
+
+                Row(
+
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+
+                ){
+
+                    if (producto.precio_descuento != null) {
+
+
+                        Row(
+
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+                        ) {
+
+
+                            Text(
+
+                                text = "S/. ${producto.precio_original}",
+
+                                color = FoodGray,
+
+                                style = MaterialTheme.typography.bodyMedium,
+
+                                textDecoration = TextDecoration.LineThrough
+
+                            )
+
+
+
+                            Text(
+
+                                text = "S/. ${producto.precio_descuento}",
+
+                                color = FoodGreen,
+
+                                style = MaterialTheme.typography.titleLarge,
+
+                                fontWeight = FontWeight.Bold
+
+                            )
+
+
                         }
 
-                    }
-                ) {
 
-                    Text("+")
+                    } else {
+
+
+                        Text(
+
+                            text = "S/. ${producto.precio_original}",
+
+                            color = FoodBlack,
+
+                            style = MaterialTheme.typography.titleLarge,
+
+                            fontWeight = FontWeight.Bold
+
+                        )
+
+
+                    }
+                }
+
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
+
+                Text(
+                    text = "Disponible: ${producto.cantidad_disponible}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
+
+
+
+                // CONTROL DE CANTIDAD
+
+                Row(
+
+                    modifier = Modifier.fillMaxWidth(),
+
+                    horizontalArrangement = Arrangement.Center,
+
+                    verticalAlignment = Alignment.CenterVertically
+
+                ){
+
+
+
+                    FilledIconButton(
+
+                        onClick = {
+
+                            if(cantidad > 1){
+                                cantidad--
+                            }
+
+                        }
+
+                    ){
+
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = null
+                        )
+
+                    }
+
+
+
+
+                    Text(
+
+                        text = cantidad.toString(),
+
+                        style = MaterialTheme.typography.titleLarge,
+
+                        modifier = Modifier.padding(horizontal = 20.dp)
+
+                    )
+
+
+
+
+                    FilledIconButton(
+
+                        onClick = {
+
+                            if(cantidad < producto.cantidad_disponible){
+                                cantidad++
+                            }
+
+                        }
+
+                    ){
+
+                        Icon(
+
+                            imageVector = Icons.Default.Add,
+
+                            contentDescription = null
+
+                        )
+
+                    }
+
 
                 }
 
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
+                Spacer(
+                    modifier = Modifier.height(16.dp)
+                )
 
-                    onAgregarCarrito(
-                        producto.id,
-                        cantidad
+
+
+
+                // BOTON CARRITO
+
+                Button(
+
+                    onClick = {
+
+
+                        onAgregarCarrito(
+
+                            producto.id,
+
+                            cantidad
+
+                        )
+
+                    },
+
+
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+
+
+                    shape = RoundedCornerShape(16.dp)
+
+                ){
+
+
+
+                    Icon(
+
+                        imageVector = Icons.Default.ShoppingCart,
+
+                        contentDescription = null
+
                     )
 
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
 
-                Text("Agregar al carrito")
+
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
+
+
+
+                    Text(
+                        text = "Agregar al carrito"
+                    )
+
+
+                }
+
 
             }
+
 
         }
 
+
     }
+
 
 }

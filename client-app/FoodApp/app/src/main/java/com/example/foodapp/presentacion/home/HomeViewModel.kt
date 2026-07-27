@@ -71,15 +71,15 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun buscarProducto(texto: String){
+    fun buscarProducto(texto: String) {
 
-        val filtrados = if(texto.isEmpty()){
+        val filtrados = if (texto.isEmpty()) {
 
-            _uiState.value.productos
+            productosOriginales
 
-        }else{
+        } else {
 
-            _uiState.value.productos.filter {
+            productosOriginales.filter {
 
                 it.nombre.contains(
                     texto,
@@ -90,10 +90,9 @@ class HomeViewModel @Inject constructor(
 
         }
 
-
         _uiState.value = _uiState.value.copy(
             busqueda = texto,
-            productosFiltrados = filtrados
+            productos = filtrados
         )
 
     }
@@ -172,8 +171,19 @@ class HomeViewModel @Inject constructor(
 
     fun mostrarTodos() {
 
+        val texto = _uiState.value.busqueda
+
         _uiState.value = _uiState.value.copy(
-            productos = productosOriginales
+
+            productos = productosOriginales.filter {
+
+                it.nombre.contains(
+                    texto,
+                    ignoreCase = true
+                )
+
+            }
+
         )
 
     }
@@ -182,14 +192,17 @@ class HomeViewModel @Inject constructor(
         categoriaId: Int
     ) {
 
+        val texto = _uiState.value.busqueda
+
+        val lista = productosOriginales.filter {
+
+            it.categoria_id == categoriaId &&
+                    it.nombre.contains(texto, ignoreCase = true)
+
+        }
+
         _uiState.value = _uiState.value.copy(
-
-            productos = productosOriginales.filter {
-
-                it.categoria_id == categoriaId
-
-            }
-
+            productos = lista
         )
 
     }

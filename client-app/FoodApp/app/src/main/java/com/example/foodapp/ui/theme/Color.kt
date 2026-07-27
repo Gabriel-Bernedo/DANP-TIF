@@ -2,10 +2,37 @@ package com.example.foodapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Verde principal (comida / ahorro)
+val FoodGreen = Color(0xFF22C55E)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+
+// Verde oscuro
+val FoodGreenDark = Color(0xFF15803D)
+
+
+// Naranja para ofertas
+val FoodOrange = Color(0xFFF97316)
+
+
+// Fondo general de la app
+val FoodBackground = Color(0xFFF8FAFC)
+
+
+// Gris textos secundarios
+val FoodGray = Color(0xFF64748B)
+
+
+// Gris claro para bordes/cards
+val FoodLightGray = Color(0xFFE2E8F0)
+
+
+// Blanco
+val FoodWhite = Color(0xFFFFFFFF)
+
+
+// Texto principal
+val FoodBlack = Color(0xFF111827)
+
+
+// Rojo para errores
+val FoodRed = Color(0xFFEF4444)
