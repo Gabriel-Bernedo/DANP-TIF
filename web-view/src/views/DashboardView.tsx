@@ -7,7 +7,7 @@ import {
 import { Download, TrendingUp, ShoppingBag, Calendar, Package, Activity, DollarSign } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 
 export function DashboardView() {
   const { 
@@ -45,8 +45,13 @@ export function DashboardView() {
     const generateChartImage = async (id: string) => {
       const el = document.getElementById(id);
       if (!el) return null;
-      const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
-      return canvas.toDataURL('image/png');
+      try {
+        const dataUrl = await toPng(el, { backgroundColor: '#ffffff', pixelRatio: 2 });
+        return dataUrl;
+      } catch (err) {
+        console.error('Error generating chart image:', err);
+        return null;
+      }
     };
 
     const imgVentas = await generateChartImage('chart-ventas');
