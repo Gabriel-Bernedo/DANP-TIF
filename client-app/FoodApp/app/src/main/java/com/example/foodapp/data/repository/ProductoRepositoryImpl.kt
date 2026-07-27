@@ -7,7 +7,7 @@ import com.example.foodapp.network.ApiService
 import retrofit2.Response
 import javax.inject.Inject
 import com.example.foodapp.data.model.CarritoResponse
-
+import com.example.foodapp.data.model.Categoria
 
 
 class ProductoRepositoryImpl @Inject constructor(
@@ -55,6 +55,12 @@ class ProductoRepositoryImpl @Inject constructor(
     ): Response<Unit> {
 
         return api.eliminarProductoCarrito(detalleId)
+
+    }
+
+    override suspend fun getCategorias(): Response<List<Categoria>> {
+
+        return api.getCategorias()
 
     }
 

@@ -1,5 +1,6 @@
 package com.example.foodapp.presentacion.home
 
+import com.example.foodapp.data.model.Categoria
 import com.example.foodapp.data.model.Producto
 
 data class HomeState(
@@ -7,5 +8,6 @@ data class HomeState(
     val productosFiltrados: List<Producto> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val busqueda: String = ""
+    val busqueda: String = "",
+    val categorias: List<Categoria> = emptyList(),
 )

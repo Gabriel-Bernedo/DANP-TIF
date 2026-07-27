@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.foodapp.data.model.AddToCartRequest
+import com.example.foodapp.data.model.Categoria
+import com.example.foodapp.data.model.Producto
 import com.example.foodapp.domain.repository.CarritoRepository
 import com.example.foodapp.domain.repository.ProductoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,10 +25,13 @@ class HomeViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
-
-
+    private val productosOriginales = mutableListOf<Producto>()
+    private var categoriasOriginales = listOf<Categoria>()
     init {
+
         obtenerProductos()
+        obtenerCategorias()
+
     }
 
 
@@ -34,7 +39,7 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            _uiState.value = HomeState(
+            _uiState.value = _uiState.value.copy(
                 isLoading = true
             )
 
@@ -42,13 +47,20 @@ class HomeViewModel @Inject constructor(
 
                 val response = productoRepository.getProductos()
 
-                _uiState.value = HomeState(
-                    productos = response.body() ?: emptyList()
+                val lista = response.body() ?: emptyList()
+
+                productosOriginales.clear()
+                productosOriginales.addAll(lista)
+
+                _uiState.value = _uiState.value.copy(
+                    productos = lista,
+                    isLoading = false
                 )
 
             } catch (e: Exception) {
 
-                _uiState.value = HomeState(
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
                     error = e.message
                 )
 
@@ -57,6 +69,7 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
 
     fun buscarProducto(texto: String){
 
@@ -129,5 +142,73 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
+    private fun obtenerCategorias() {
+
+        viewModelScope.launch {
+
+            try {
+
+                val response = productoRepository.getCategorias()
+
+                categoriasOriginales = response.body() ?: emptyList()
+
+                _uiState.value = _uiState.value.copy(
+                    categorias = categoriasOriginales
+                )
+
+            } catch (e: Exception) {
+
+                Log.d(
+                    "HOME",
+                    e.message ?: ""
+                )
+
+            }
+
+        }
+
+    }
+
+    fun mostrarTodos() {
+
+        _uiState.value = _uiState.value.copy(
+            productos = productosOriginales
+        )
+
+    }
+
+    fun filtrarCategoria(
+        categoriaId: Int
+    ) {
+
+        _uiState.value = _uiState.value.copy(
+
+            productos = productosOriginales.filter {
+
+                it.categoria_id == categoriaId
+
+            }
+
+        )
+
+    }
+
+    fun filtrarOfertas() {
+
+        _uiState.value = _uiState.value.copy(
+
+            productos = productosOriginales.filter {
+
+                it.precio_descuento != null &&
+                        it.precio_descuento != it.precio_original
+
+            }
+
+        )
+
+    }
+
+
 
 }

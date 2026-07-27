@@ -1,8 +1,10 @@
 package com.example.foodapp.presentacion.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -63,13 +65,12 @@ fun HomeScreen(
             Column {
 
                 Text(
-                    text = "Encuentra comida cerca",
-                    style = MaterialTheme.typography.titleMedium
+                    text = "FoodSaver",
+                    style = MaterialTheme.typography.headlineLarge
                 )
 
-
                 Text(
-                    text = "📍 Ver en el mapa",
+                    text = "Salva comida, ahorra dinero",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -143,16 +144,35 @@ fun HomeScreen(
         )
 
 
-        Row(
+        LazyRow(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
+            item {
 
-            CategoriaItem("🍰\nPostres")
+                CategoriaItem(
+                    texto = "Todas",
+                    onClick = {
+                        viewModel.mostrarTodos()
+                    }
+                )
 
-            CategoriaItem("🍕\nComida")
+            }
 
-            CategoriaItem("🥗\nSaludable")
+            items(uiState.categorias) { categoria ->
+
+                CategoriaItem(
+                    texto = categoria.nombre,
+                    onClick = {
+
+                        viewModel.filtrarCategoria(
+                            categoria.id
+                        )
+
+                    }
+                )
+
+            }
 
         }
 
@@ -258,24 +278,25 @@ fun HomeScreen(
 }
 
 
-
 @Composable
 fun CategoriaItem(
-    texto: String
-){
+    texto: String,
+    onClick: () -> Unit
+) {
 
     Box(
 
         modifier = Modifier
             .size(90.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(
-                MaterialTheme.colorScheme.surfaceVariant
-            ),
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable {
+                onClick()
+            },
 
         contentAlignment = Alignment.Center
 
-    ){
+    ) {
 
         Text(
             text = texto

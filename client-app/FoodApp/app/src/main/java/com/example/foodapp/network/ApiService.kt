@@ -11,6 +11,7 @@ import com.example.foodapp.data.model.Producto
 import retrofit2.http.Path
 import com.example.foodapp.data.model.AddToCartRequest
 import com.example.foodapp.data.model.CarritoResponse
+import com.example.foodapp.data.model.Categoria
 import com.example.foodapp.data.model.CrearPedidoRequest
 import com.example.foodapp.data.model.Pedido
 import retrofit2.http.DELETE
@@ -59,5 +60,10 @@ interface ApiService {
     suspend fun crearPedido(
         @Body request: CrearPedidoRequest
     ): Response<Pedido>
+
+    @GET("categorias")
+    suspend fun getCategorias(): Response<List<Categoria>>
+
+
 
 }
