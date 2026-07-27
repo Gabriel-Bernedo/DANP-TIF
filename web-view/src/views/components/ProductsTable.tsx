@@ -24,8 +24,12 @@ export function ProductsTable({ products, isLoading, onDelete, onEdit }: Product
       header: 'Producto',
       cell: (item) => (
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center border border-gray-200">
-            <Package size={20} />
+          <div className="w-10 h-10 rounded-xl bg-gray-100 text-gray-500 flex items-center justify-center border border-gray-200 overflow-hidden shrink-0">
+            {item.imagen_url ? (
+              <img src={item.imagen_url} alt={item.nombre} className="w-full h-full object-cover" />
+            ) : (
+              <Package size={20} />
+            )}
           </div>
           <div>
             <div className="font-semibold text-gray-800">{item.nombre}</div>

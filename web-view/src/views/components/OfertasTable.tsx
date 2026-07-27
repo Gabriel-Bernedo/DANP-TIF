@@ -18,11 +18,20 @@ export function OfertasTable({ ofertas, isLoading, onDelete, onEdit }: OfertasTa
 
   const columns: ColumnDef<IOferta>[] = [
     {
-      header: 'Producto ID',
+      header: 'Producto',
       cell: (item) => (
-        <div className="flex items-center gap-2">
-          <Percent size={16} className="text-pink-500" />
-          <span className="font-semibold text-gray-800">#{item.producto_id}</span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-pink-50 text-pink-500 flex items-center justify-center border border-pink-100 overflow-hidden shrink-0">
+            {item.productos?.imagen_url ? (
+              <img src={item.productos.imagen_url} alt={item.productos.nombre} className="w-full h-full object-cover" />
+            ) : (
+              <Percent size={18} />
+            )}
+          </div>
+          <div>
+            <div className="font-semibold text-gray-800">{item.productos?.nombre || 'Producto Desconocido'}</div>
+            <div className="text-xs text-gray-500">ID #{item.producto_id}</div>
+          </div>
         </div>
       )
     },
