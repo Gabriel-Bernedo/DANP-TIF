@@ -7,6 +7,7 @@ import { OfertaService } from '../../services/OfertaService';
 import { CarritoService } from '../../services/CarritoService';
 import { CategoriaService } from '../../services/CategoriaService';
 import { AdminService } from '../../services/AdminService';
+import { DashboardService } from '../../services/DashboardService';
 
 // Initialize the HTTP client
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -21,3 +22,4 @@ export const ofertaService = new OfertaService(httpClient);
 export const carritoService = new CarritoService(httpClient);
 export const categoriaService = new CategoriaService(httpClient);
 export const adminService = new AdminService(httpClient);
+export const dashboardService = new DashboardService(httpClient);

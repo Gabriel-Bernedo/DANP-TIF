@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { LayoutDashboard, Users, FileText, LogOut, Bell, Search, Tag, Percent, ShoppingCart, Truck, Shield } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, LogOut, Bell, Search, Tag, Percent, ShoppingCart, Truck, Shield, BarChart3 } from 'lucide-react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 interface AdminLayoutProps {
@@ -34,6 +34,11 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
         </div>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <Link to="/admin/dashboard" className={navItemClass('/admin/dashboard')}>
+            <BarChart3 size={20} />
+            Dashboard
+          </Link>
+          <div className="my-2 border-t border-gray-100"></div>
           <Link to="/admin/pedidos" className={navItemClass('/admin/pedidos')}>
             <Truck size={20} />
             Pedidos
