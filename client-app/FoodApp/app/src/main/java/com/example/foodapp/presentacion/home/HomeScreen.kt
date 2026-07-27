@@ -1,247 +1,267 @@
 package com.example.foodapp.presentacion.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.foodapp.presentacion.components.CategoryItem
+import com.example.foodapp.presentacion.components.FoodSearchBar
+import com.example.foodapp.presentacion.components.OfferBanner
 import com.example.foodapp.presentacion.components.ProductCard
-import com.example.foodapp.presentacion.home.HomeViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun HomeScreen(
+
     navController: NavController,
+
     viewModel: HomeViewModel = hiltViewModel()
+
 ) {
 
 
     val uiState by viewModel.uiState.collectAsState()
 
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+    val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-
-
-        // HEADER
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-
-            Column {
-
-                Text(
-                    text = "Encuentra comida cerca",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-
-                Text(
-                    text = "📍 Ver en el mapa",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-            }
-
-
-            IconButton(
-                onClick = {}
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Carrito"
-                )
-
-            }
-
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
+            )
         }
 
+    ){ padding ->
 
-
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
-
-
-
-        // BUSCADOR
-
-        OutlinedTextField(
-            value = uiState.busqueda,
-            onValueChange = {
-                viewModel.buscarProducto(it)
-            },
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth(),
-            placeholder = {
-                Text(
-                    text = "Busca lo que quieras"
-                )
-            },
-            leadingIcon = {
+                .fillMaxSize()
+                .padding(padding)
+                .padding(horizontal = 16.dp),
 
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null
-                )
+            verticalArrangement = Arrangement.spacedBy(16.dp)
 
-            },
-            shape = RoundedCornerShape(30.dp)
-        )
+        ){
 
+            // HEADER
 
+            item {
+                HomeHeader(
+                    onCartClick = {
+                        navController.navigate("cart")
 
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
+                    }
 
-
-
-        // CATEGORIAS
-
-        Text(
-            text = "Categorías",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-
-        Spacer(
-            modifier = Modifier.height(10.dp)
-        )
-
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-
-
-            CategoriaItem("🍰\nPostres")
-
-            CategoriaItem("🍕\nComida")
-
-            CategoriaItem("🥗\nSaludable")
-
-        }
-
-
-
-        Spacer(
-            modifier = Modifier.height(25.dp)
-        )
-
-
-
-        // PRODUCTOS
-
-        Text(
-            text = "Productos disponibles",
-            style = MaterialTheme.typography.titleLarge
-        )
-
-
-
-        Spacer(
-            modifier = Modifier.height(10.dp)
-        )
-
-
-
-        when {
-
-
-            uiState.isLoading -> {
-
-                Text(
-                    text = "Cargando productos..."
                 )
 
             }
 
+            // BUSCADOR
 
-            uiState.error != null -> {
+            item {
 
-                Text(
-                    text = uiState.error ?: ""
+                FoodSearchBar(
+
+                    value = uiState.busqueda,
+
+
+                    onValueChange = {
+
+                        viewModel.buscarProducto(it)
+
+                    }
+
                 )
 
             }
 
+            // BANNER OFERTA
 
-            else -> {
+            item {
+                OfferBanner(
+                    onClick = {
+                        viewModel.filtrarOfertas()
+                    }
+
+                )
 
 
-                LazyColumn {
+            }
 
-                    items(uiState.productos) { producto ->
+            // CATEGORIAS
 
-                        ProductCard(
-                            producto = producto,
+            item {
+
+                Text(
+
+                    text = "Categorías",
+
+                    style = MaterialTheme.typography.titleLarge
+
+                )
+
+
+            }
+
+            item {
+
+                LazyRow(
+
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+
+                ){
+
+                    item {
+
+                        CategoryItem(
+
+                            texto = "Todas",
+
                             onClick = {
 
-                                navController.navigate(
-                                    "product_detail/${producto.id}"
-                                )
-
+                                viewModel.mostrarTodos()
                             }
                         )
 
                     }
 
+                    items(uiState.categorias){ categoria ->
+                        CategoryItem(
+                            texto = categoria.nombre,
+                            onClick = {
+                                viewModel.filtrarCategoria(
+                                    categoria.id
+
+                                )
+                            }
+                        )
+                    }
                 }
 
+            }
+
+            // PRODUCTOS TITULO
+
+            item {
+                Text(
+                    text = "Productos disponibles",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+
+            // PRODUCTOS
+
+            if(uiState.isLoading){
+                item {
+                    Text(
+                        text = "Cargando productos..."
+
+                    )
+                }
 
             }
 
 
+            else if(uiState.error != null){
+                item {
+                    Text(
+                        text = uiState.error ?: ""
+                    )
+                }
+            }
+
+            else {
+
+                items(uiState.productos){ producto ->
+                    ProductCard(
+                        producto = producto,
+                        onClick = {
+                            navController.navigate(
+                                "product_detail/${producto.id}"
+
+                            )
+                        },
+                        onAgregarCarrito = { productoId, cantidad ->
+
+                            scope.launch {
+
+                                val agregado = viewModel.agregarAlCarrito(
+                                    productoId,
+                                    cantidad
+                                )
+
+                                if (agregado) {
+                                    snackbarHostState.showSnackbar(
+                                        "✅ Producto agregado al carrito"
+                                    )
+                                } else {
+
+                                    snackbarHostState.showSnackbar(
+                                        "❌ Error al agregar producto"
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+
         }
-
-
     }
-
-
 }
 
-
-
 @Composable
-fun CategoriaItem(
-    texto: String
+fun HomeHeader(
+    onCartClick: () -> Unit
 ){
 
-    Box(
+    Row(
 
         modifier = Modifier
-            .size(90.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(
-                MaterialTheme.colorScheme.surfaceVariant
-            ),
-
-        contentAlignment = Alignment.Center
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
 
     ){
 
-        Text(
-            text = texto
-        )
+        Column {
+            Text(
+                text = "Hola 👋",
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+
+            Text(
+                text = "¿Qué quieres salvar hoy?",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
+
+
+        IconButton(
+            onClick = onCartClick
+        ){
+
+            Icon(
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "Carrito"
+
+            )
+        }
 
     }
 

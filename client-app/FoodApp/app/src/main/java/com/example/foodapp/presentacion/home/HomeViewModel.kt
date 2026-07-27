@@ -1,7 +1,12 @@
 package com.example.foodapp.presentacion.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.foodapp.data.model.AddToCartRequest
+import com.example.foodapp.data.model.Categoria
+import com.example.foodapp.data.model.Producto
+import com.example.foodapp.domain.repository.CarritoRepository
 import com.example.foodapp.domain.repository.ProductoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,16 +18,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val productoRepository: ProductoRepository
-) : ViewModel() {
+    private val productoRepository: ProductoRepository,
+    private val carritoRepository: CarritoRepository
+) : ViewModel()  {
 
 
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState.asStateFlow()
-
-
+    private val productosOriginales = mutableListOf<Producto>()
+    private var categoriasOriginales = listOf<Categoria>()
     init {
+
         obtenerProductos()
+        obtenerCategorias()
+
     }
 
 
@@ -30,7 +39,7 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            _uiState.value = HomeState(
+            _uiState.value = _uiState.value.copy(
                 isLoading = true
             )
 
@@ -38,13 +47,20 @@ class HomeViewModel @Inject constructor(
 
                 val response = productoRepository.getProductos()
 
-                _uiState.value = HomeState(
-                    productos = response.body() ?: emptyList()
+                val lista = response.body() ?: emptyList()
+
+                productosOriginales.clear()
+                productosOriginales.addAll(lista)
+
+                _uiState.value = _uiState.value.copy(
+                    productos = lista,
+                    isLoading = false
                 )
 
             } catch (e: Exception) {
 
-                _uiState.value = HomeState(
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
                     error = e.message
                 )
 
@@ -54,15 +70,16 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    fun buscarProducto(texto: String){
 
-        val filtrados = if(texto.isEmpty()){
+    fun buscarProducto(texto: String) {
 
-            _uiState.value.productos
+        val filtrados = if (texto.isEmpty()) {
 
-        }else{
+            productosOriginales
 
-            _uiState.value.productos.filter {
+        } else {
+
+            productosOriginales.filter {
 
                 it.nombre.contains(
                     texto,
@@ -73,12 +90,138 @@ class HomeViewModel @Inject constructor(
 
         }
 
-
         _uiState.value = _uiState.value.copy(
             busqueda = texto,
-            productosFiltrados = filtrados
+            productos = filtrados
         )
 
     }
+    suspend fun agregarAlCarrito(
+        productoId: Int,
+        cantidad: Int
+    ): Boolean {
+
+        return try {
+
+            val response = carritoRepository.agregarAlCarrito(
+                AddToCartRequest(
+                    producto_id = productoId,
+                    cantidad = cantidad
+                )
+            )
+
+            if (response.isSuccessful) {
+
+                Log.d(
+                    "HOME",
+                    "Producto agregado al carrito"
+                )
+
+                true
+
+            } else {
+
+                Log.d(
+                    "HOME",
+                    "Error ${response.code()}"
+                )
+
+                false
+
+            }
+
+        } catch (e: Exception) {
+
+            Log.d(
+                "HOME",
+                e.message ?: "Error"
+            )
+
+            false
+        }
+
+    }
+
+    private fun obtenerCategorias() {
+
+        viewModelScope.launch {
+
+            try {
+
+                val response = productoRepository.getCategorias()
+
+                categoriasOriginales = response.body() ?: emptyList()
+
+                _uiState.value = _uiState.value.copy(
+                    categorias = categoriasOriginales
+                )
+
+            } catch (e: Exception) {
+
+                Log.d(
+                    "HOME",
+                    e.message ?: ""
+                )
+
+            }
+
+        }
+
+    }
+
+    fun mostrarTodos() {
+
+        val texto = _uiState.value.busqueda
+
+        _uiState.value = _uiState.value.copy(
+
+            productos = productosOriginales.filter {
+
+                it.nombre.contains(
+                    texto,
+                    ignoreCase = true
+                )
+
+            }
+
+        )
+
+    }
+
+    fun filtrarCategoria(
+        categoriaId: Int
+    ) {
+
+        val texto = _uiState.value.busqueda
+
+        val lista = productosOriginales.filter {
+
+            it.categoria_id == categoriaId &&
+                    it.nombre.contains(texto, ignoreCase = true)
+
+        }
+
+        _uiState.value = _uiState.value.copy(
+            productos = lista
+        )
+
+    }
+
+    fun filtrarOfertas() {
+
+        _uiState.value = _uiState.value.copy(
+
+            productos = productosOriginales.filter {
+
+                it.precio_descuento != null &&
+                        it.precio_descuento != it.precio_original
+
+            }
+
+        )
+
+    }
+
+
 
 }

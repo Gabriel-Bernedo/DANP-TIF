@@ -10,15 +10,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.foodapp.navigation.Routes
 import com.example.foodapp.presentacion.pedidos.PedidoViewModel
 
 
 @Composable
 fun CarritoScreen(
+    navController: NavController,
     viewModel: CarritoViewModel = hiltViewModel(),
     pedidoViewModel: PedidoViewModel = hiltViewModel()
 ) {
-
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -141,21 +143,16 @@ fun CarritoScreen(
 
 
                 Button(
-
                     onClick = {
 
-                        pedidoViewModel.crearPedido()
+                        navController.navigate(
+                            Routes.Payment.route
+                        )
 
-                    },
+                    }
+                ) {
 
-                    modifier = Modifier
-                        .fillMaxWidth()
-
-                ){
-
-                    Text(
-                        text = "Realizar pedido"
-                    )
+                    Text("Realizar pedido")
 
                 }
 

@@ -13,8 +13,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import android.content.Context
 import com.example.foodapp.data.datastore.TokenManager
+import com.example.foodapp.data.repository.CarritoRepositoryImpl
 import dagger.hilt.android.qualifiers.ApplicationContext
 import com.example.foodapp.data.repository.PedidoRepositoryImpl
+import com.example.foodapp.domain.repository.CarritoRepository
 import com.example.foodapp.domain.repository.PedidoRepository
 
 @Module
@@ -64,6 +66,13 @@ object AppModule {
 
         return impl
 
+    }
+    @Provides
+    @Singleton
+    fun provideCarritoRepository(
+        impl: CarritoRepositoryImpl
+    ): CarritoRepository {
+        return impl
     }
 
 }
