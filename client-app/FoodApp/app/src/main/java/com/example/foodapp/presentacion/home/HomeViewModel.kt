@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val productoRepository: ProductoRepository,
@@ -85,47 +84,48 @@ class HomeViewModel @Inject constructor(
         )
 
     }
-    fun agregarAlCarrito(
+    suspend fun agregarAlCarrito(
         productoId: Int,
         cantidad: Int
-    ) {
+    ): Boolean {
 
-        viewModelScope.launch {
+        return try {
 
-            try {
-
-                val response = carritoRepository.agregarAlCarrito(
-                    AddToCartRequest(
-                        producto_id = productoId,
-                        cantidad = cantidad
-                    )
+            val response = carritoRepository.agregarAlCarrito(
+                AddToCartRequest(
+                    producto_id = productoId,
+                    cantidad = cantidad
                 )
+            )
 
-                if (response.isSuccessful) {
-
-                    Log.d(
-                        "HOME",
-                        "Producto agregado al carrito"
-                    )
-
-                } else {
-
-                    Log.d(
-                        "HOME",
-                        "Error ${response.code()}"
-                    )
-
-                }
-
-            } catch (e: Exception) {
+            if (response.isSuccessful) {
 
                 Log.d(
                     "HOME",
-                    e.message ?: "Error"
+                    "Producto agregado al carrito"
                 )
+
+                true
+
+            } else {
+
+                Log.d(
+                    "HOME",
+                    "Error ${response.code()}"
+                )
+
+                false
 
             }
 
+        } catch (e: Exception) {
+
+            Log.d(
+                "HOME",
+                e.message ?: "Error"
+            )
+
+            false
         }
 
     }

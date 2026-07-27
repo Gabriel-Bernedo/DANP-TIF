@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.foodapp.presentacion.components.ProductCard
 import com.example.foodapp.presentacion.home.HomeViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -28,7 +29,21 @@ fun HomeScreen(
 
 
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
+
+    Scaffold(
+
+        snackbarHost = {
+
+            SnackbarHost(
+                hostState = snackbarHostState
+            )
+
+        }
+
+    ) { padding ->
 
     Column(
         modifier = Modifier
@@ -202,10 +217,30 @@ fun HomeScreen(
                             },
 
                             onAgregarCarrito = { productoId, cantidad ->
-                                viewModel.agregarAlCarrito(
-                                    productoId,
-                                    cantidad
-                                )
+
+                                scope.launch {
+
+                                    val agregado = viewModel.agregarAlCarrito(
+                                        productoId,
+                                        cantidad
+                                    )
+
+                                    if (agregado) {
+
+                                        snackbarHostState.showSnackbar(
+                                            "✅ Producto agregado al carrito"
+                                        )
+
+                                    } else {
+
+                                        snackbarHostState.showSnackbar(
+                                            "❌ Error al agregar producto"
+                                        )
+
+                                    }
+
+                                }
+
                             }
 
                         )
@@ -218,11 +253,8 @@ fun HomeScreen(
 
 
         }
-
-
     }
-
-
+    }
 }
 
 
