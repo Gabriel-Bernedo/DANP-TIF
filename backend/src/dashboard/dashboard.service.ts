@@ -47,9 +47,23 @@ export class DashboardService {
       ventasTemporalesMap.set(dateKey, currentTotal + Number(p.total));
     });
 
-    const ventasTemporales = Array.from(ventasTemporalesMap.entries())
+    let ventasTemporales = Array.from(ventasTemporalesMap.entries())
       .map(([fecha, total]) => ({ fecha, total }))
       .sort((a, b) => a.fecha.localeCompare(b.fecha)); // Orden cronológico
+
+    if (ventasTemporales.length > 0) {
+      const firstDate = new Date(ventasTemporales[0].fecha + 'T00:00:00Z');
+      const lastDate = new Date(ventasTemporales[ventasTemporales.length - 1].fecha + 'T00:00:00Z');
+      const linearVentas: Array<{fecha: string, total: number}> = [];
+      for (let d = new Date(firstDate); d <= lastDate; d.setUTCDate(d.getUTCDate() + 1)) {
+        const dateKey = d.toISOString().split('T')[0];
+        linearVentas.push({
+          fecha: dateKey,
+          total: ventasTemporalesMap.get(dateKey) || 0,
+        });
+      }
+      ventasTemporales = linearVentas;
+    }
 
     // 4. Productos más vendidos
     // Filtramos los detalles de pedido que correspondan a los pedidos en el rango de fechas
@@ -91,11 +105,35 @@ export class DashboardService {
       }),
     );
 
+    const totalItemsAgg = await this.prisma.pedidoDetalle.aggregate({
+      _sum: {
+        cantidad: true,
+      },
+      where: orderDetailWhere,
+    });
+    const totalItems = totalItemsAgg._sum.cantidad || 0;
+
+    const tamanoPromedioPedido = totalPedidos > 0 ? totalItems / totalPedidos : 0;
+    const ventaPromedioPedido = totalPedidos > 0 ? ingresosTotales / totalPedidos : 0;
+
+    let diasTranscurridos = 1;
+    if (startDate && endDate) {
+      diasTranscurridos = Math.max(1, (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 3600 * 24) + 1);
+    } else if (ventasTemporales.length > 0) {
+      const firstDate = new Date(ventasTemporales[0].fecha + 'T00:00:00Z').getTime();
+      const lastDate = new Date(ventasTemporales[ventasTemporales.length - 1].fecha + 'T00:00:00Z').getTime();
+      diasTranscurridos = Math.max(1, (lastDate - firstDate) / (1000 * 3600 * 24) + 1);
+    }
+    const numeroPedidosPromedio = totalPedidos / diasTranscurridos;
+
     return {
       ingresosTotales,
       totalPedidos,
       ventasTemporales,
       productosMasVendidos,
+      tamanoPromedioPedido,
+      ventaPromedioPedido,
+      numeroPedidosPromedio
     };
   }
 }
