@@ -5,4 +5,8 @@ export interface IOferta {
   fecha_inicio: string;
   fecha_fin: string;
   estado: string;
+  productos?: {
+    nombre: string;
+    imagen_url?: string;
+  };
 }
