@@ -16,7 +16,7 @@ export function useAuthViewModel() {
     try {
       const user = await authService.login(email, password);
       console.log('Logged in user:', user);
-      navigate('/admin/productos');
+      navigate('/admin/dashboard');
     } catch (err: any) {
       setError(err.message || 'Error en inicio de sesión');
     } finally {

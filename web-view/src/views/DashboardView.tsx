@@ -4,7 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar
 } from 'recharts';
-import { Download, TrendingUp, ShoppingBag, Calendar } from 'lucide-react';
+import { Download, TrendingUp, ShoppingBag, Calendar, Package, Activity, DollarSign } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -28,19 +28,24 @@ export function DashboardView() {
     doc.text('Reporte de Dashboard', 14, 22);
     
     doc.setFontSize(12);
-    doc.text(`Ingresos Totales: $${estadisticas.ingresosTotales.toFixed(2)}`, 14, 32);
-    doc.text(`Total Pedidos: ${estadisticas.totalPedidos}`, 14, 38);
+    doc.text(`Ingresos Totales: $${(estadisticas.ingresosTotales || 0).toFixed(2)}`, 14, 32);
+    doc.text(`Total Pedidos: ${estadisticas.totalPedidos || 0}`, 14, 38);
+    doc.text(`Venta Promedio por Pedido: $${(estadisticas.ventaPromedioPedido || 0).toFixed(2)}`, 14, 44);
+    doc.text(`Tamaño Prom. de Pedido: ${(estadisticas.tamanoPromedioPedido || 0).toFixed(2)} items`, 14, 50);
+    doc.text(`Pedidos por Día (Promedio): ${(estadisticas.numeroPedidosPromedio || 0).toFixed(2)}`, 14, 56);
     
+    let currentY = 62;
     if (startDate || endDate) {
-        doc.text(`Filtro: ${startDate || 'Inicio'} hasta ${endDate || 'Fin'}`, 14, 44);
+        doc.text(`Filtro: ${startDate || 'Inicio'} hasta ${endDate || 'Fin'}`, 14, currentY);
+        currentY += 6;
     }
 
     doc.setFontSize(16);
-    doc.text('Ventas Temporales', 14, 55);
+    doc.text('Ventas Temporales', 14, currentY + 10);
     autoTable(doc, {
-      startY: 60,
+      startY: currentY + 15,
       head: [['Fecha', 'Total ($)']],
-      body: estadisticas.ventasTemporales.map(v => [v.fecha, v.total.toFixed(2)]),
+      body: (estadisticas.ventasTemporales || []).map(v => [v.fecha, (v.total || 0).toFixed(2)]),
     });
 
     const finalY = (doc as any).lastAutoTable.finalY || 60;
@@ -104,24 +109,55 @@ export function DashboardView() {
         ) : estadisticas ? (
           <>
             {/* Tarjetas de Resumen */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                  <TrendingUp size={24} />
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center shrink-0">
+                    <TrendingUp size={20} />
+                  </div>
+                  <p className="text-sm font-medium text-gray-500 leading-tight">Ingresos<br/>Totales</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Ingresos Totales</p>
-                  <p className="text-2xl font-bold text-gray-900">${estadisticas.ingresosTotales.toFixed(2)}</p>
-                </div>
+                <p className="text-xl font-bold text-gray-900">${(estadisticas.ingresosTotales || 0).toFixed(2)}</p>
               </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
-                  <ShoppingBag size={24} />
+
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shrink-0">
+                    <ShoppingBag size={20} />
+                  </div>
+                  <p className="text-sm font-medium text-gray-500 leading-tight">Total<br/>Pedidos</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Total Pedidos</p>
-                  <p className="text-2xl font-bold text-gray-900">{estadisticas.totalPedidos}</p>
+                <p className="text-xl font-bold text-gray-900">{estadisticas.totalPedidos || 0}</p>
+              </div>
+
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center shrink-0">
+                    <DollarSign size={20} />
+                  </div>
+                  <p className="text-sm font-medium text-gray-500 leading-tight">Venta Prom.<br/>(por Pedido)</p>
                 </div>
+                <p className="text-xl font-bold text-gray-900">${(estadisticas.ventaPromedioPedido || 0).toFixed(2)}</p>
+              </div>
+
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center shrink-0">
+                    <Package size={20} />
+                  </div>
+                  <p className="text-sm font-medium text-gray-500 leading-tight">Tamaño Prom.<br/>(Items)</p>
+                </div>
+                <p className="text-xl font-bold text-gray-900">{(estadisticas.tamanoPromedioPedido || 0).toFixed(1)}</p>
+              </div>
+
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center shrink-0">
+                    <Activity size={20} />
+                  </div>
+                  <p className="text-sm font-medium text-gray-500 leading-tight">Pedidos / Día<br/>(Promedio)</p>
+                </div>
+                <p className="text-xl font-bold text-gray-900">{(estadisticas.numeroPedidosPromedio || 0).toFixed(1)}</p>
               </div>
             </div>
 

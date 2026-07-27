@@ -14,4 +14,7 @@ export interface IEstadisticas {
   totalPedidos: number;
   ventasTemporales: IVentaTemporal[];
   productosMasVendidos: IProductoVendido[];
+  tamanoPromedioPedido: number;
+  ventaPromedioPedido: number;
+  numeroPedidosPromedio: number;
 }
