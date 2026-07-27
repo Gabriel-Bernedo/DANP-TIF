@@ -90,7 +90,6 @@ export class DashboardService {
       take: 5, // Top 5
     });
 
-    // Obtener nombres de los productos más vendidos
     const productosMasVendidos = await Promise.all(
       productosAgrupados.map(async (p) => {
         const producto = await this.prisma.producto.findUnique({
@@ -104,6 +103,53 @@ export class DashboardService {
         };
       }),
     );
+
+    const productosMenosAgrupados = await this.prisma.pedidoDetalle.groupBy({
+      by: ['producto_id'],
+      _sum: { cantidad: true },
+      where: orderDetailWhere,
+      orderBy: {
+        _sum: { cantidad: 'asc' },
+      },
+      take: 5,
+    });
+
+    const productosMenosVendidos = await Promise.all(
+      productosMenosAgrupados.map(async (p) => {
+        const producto = await this.prisma.producto.findUnique({
+          where: { id: p.producto_id! },
+          select: { nombre: true },
+        });
+        return {
+          producto_id: p.producto_id,
+          nombre: producto?.nombre || 'Producto Desconocido',
+          cantidad_vendida: p._sum.cantidad || 0,
+        };
+      }),
+    );
+
+    const todosProductosAgrupados = await this.prisma.pedidoDetalle.groupBy({
+      by: ['producto_id'],
+      _sum: { cantidad: true },
+      where: orderDetailWhere,
+    });
+
+    const categoriasMap = new Map<string, number>();
+    await Promise.all(
+      todosProductosAgrupados.map(async (p) => {
+        const producto = await this.prisma.producto.findUnique({
+          where: { id: p.producto_id! },
+          include: { categorias: true },
+        });
+        const catName = producto?.categorias?.nombre || 'Sin Categoría';
+        const qty = p._sum.cantidad || 0;
+        categoriasMap.set(catName, (categoriasMap.get(catName) || 0) + qty);
+      })
+    );
+    
+    const ventasPorCategoria = Array.from(categoriasMap.entries())
+      .map(([nombre, cantidad]) => ({ nombre, cantidad }))
+      .sort((a, b) => b.cantidad - a.cantidad);
 
     const totalItemsAgg = await this.prisma.pedidoDetalle.aggregate({
       _sum: {
@@ -131,6 +177,8 @@ export class DashboardService {
       totalPedidos,
       ventasTemporales,
       productosMasVendidos,
+      productosMenosVendidos,
+      ventasPorCategoria,
       tamanoPromedioPedido,
       ventaPromedioPedido,
       numeroPedidosPromedio

@@ -9,11 +9,18 @@ export interface IProductoVendido {
   cantidad_vendida: number;
 }
 
+export interface IVentaCategoria {
+  nombre: string;
+  cantidad: number;
+}
+
 export interface IEstadisticas {
   ingresosTotales: number;
   totalPedidos: number;
   ventasTemporales: IVentaTemporal[];
   productosMasVendidos: IProductoVendido[];
+  productosMenosVendidos: IProductoVendido[];
+  ventasPorCategoria: IVentaCategoria[];
   tamanoPromedioPedido: number;
   ventaPromedioPedido: number;
   numeroPedidosPromedio: number;

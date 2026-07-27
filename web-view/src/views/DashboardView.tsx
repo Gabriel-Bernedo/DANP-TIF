@@ -2,7 +2,7 @@ import { useDashboardViewModel } from '../viewmodels/useDashboardViewModel';
 import { AdminLayout } from './components/AdminLayout';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar
+  BarChart, Bar, PieChart, Pie, Cell
 } from 'recharts';
 import { Download, TrendingUp, ShoppingBag, Calendar, Package, Activity, DollarSign } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -55,11 +55,33 @@ export function DashboardView() {
     autoTable(doc, {
       startY: finalY + 20,
       head: [['ID Producto', 'Nombre', 'Cantidad Vendida']],
-      body: estadisticas.productosMasVendidos.map(p => [p.producto_id, p.nombre, p.cantidad_vendida]),
+      body: (estadisticas.productosMasVendidos || []).map(p => [p.producto_id, p.nombre, p.cantidad_vendida]),
+    });
+
+    const finalY2 = (doc as any).lastAutoTable.finalY || finalY + 20;
+
+    doc.setFontSize(16);
+    doc.text('Productos Menos Vendidos', 14, finalY2 + 15);
+    autoTable(doc, {
+      startY: finalY2 + 20,
+      head: [['ID Producto', 'Nombre', 'Cantidad Vendida']],
+      body: (estadisticas.productosMenosVendidos || []).map(p => [p.producto_id, p.nombre, p.cantidad_vendida]),
+    });
+
+    const finalY3 = (doc as any).lastAutoTable.finalY || finalY2 + 20;
+
+    doc.setFontSize(16);
+    doc.text('Ventas por Categoría', 14, finalY3 + 15);
+    autoTable(doc, {
+      startY: finalY3 + 20,
+      head: [['Categoría', 'Cantidad Vendida']],
+      body: (estadisticas.ventasPorCategoria || []).map(c => [c.nombre, c.cantidad]),
     });
 
     doc.save('reporte_dashboard.pdf');
   };
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#f43f5e', '#a855f7'];
 
   return (
     <AdminLayout title="Dashboard">
@@ -204,6 +226,56 @@ export function DashboardView() {
                         cursor={{fill: '#f3f4f6'}}
                       />
                       <Bar dataKey="cantidad_vendida" fill="#10b981" radius={[0, 4, 4, 0]} barSize={24} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              {/* Gráfico de Ventas por Categoría */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 className="text-lg font-bold text-gray-800 mb-6">Distribución por Categorías</h3>
+                <div className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={estadisticas.ventasPorCategoria}
+                        dataKey="cantidad"
+                        nameKey="nombre"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label={(props: any) => `${props.nombre} ${((props.percent || 0) * 100).toFixed(0)}%`}
+                      >
+                        {(estadisticas.ventasPorCategoria || []).map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        formatter={(value: any) => [value, 'Cantidad']}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Gráfico de Productos Menos Vendidos */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 className="text-lg font-bold text-gray-800 mb-6">Top Productos Menos Vendidos</h3>
+                <div className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={estadisticas.productosMenosVendidos} margin={{ top: 5, right: 20, left: 0, bottom: 5 }} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f3f4f6" />
+                      <XAxis type="number" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
+                      <YAxis dataKey="nombre" type="category" axisLine={false} tickLine={false} tick={{fill: '#4b5563', fontSize: 12}} width={120} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        formatter={(value: any) => [value, 'Cantidad']}
+                        cursor={{fill: '#f3f4f6'}}
+                      />
+                      <Bar dataKey="cantidad_vendida" fill="#f43f5e" radius={[0, 4, 4, 0]} barSize={24} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
