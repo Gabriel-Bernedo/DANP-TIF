@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.foodapp.presentacion.Pago.PaymentScreen
 import com.example.foodapp.presentacion.login.LoginScreen
 import com.example.foodapp.presentacion.register.RegisterScreen
 import com.example.foodapp.presentacion.carrito.CarritoScreen
@@ -41,7 +42,9 @@ fun AppNavigation() {
             }
 
             composable(Routes.Carrito.route) {
-                CarritoScreen()
+                CarritoScreen(
+                    navController = navController
+                )
             }
 
             composable(Routes.Pedidos.route) {
@@ -77,6 +80,10 @@ fun AppNavigation() {
                     navController = navController
                 )
 
+            }
+
+            composable(Routes.Payment.route) {
+                PaymentScreen(navController)
             }
         }
     }
