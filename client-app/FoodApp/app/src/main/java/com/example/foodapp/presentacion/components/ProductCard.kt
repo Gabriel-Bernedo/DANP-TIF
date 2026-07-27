@@ -10,13 +10,23 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.foodapp.data.model.Producto
 import androidx.compose.foundation.clickable
-
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 @Composable
 fun ProductCard(
     producto: Producto,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onAgregarCarrito: (Int, Int) -> Unit
 ) {
+
+    var cantidad by remember {
+        mutableIntStateOf(1)
+    }
 
     Card(
         modifier = Modifier
@@ -31,7 +41,6 @@ fun ProductCard(
             modifier = Modifier.padding(16.dp)
         ) {
 
-
             AsyncImage(
                 model = producto.imagen_url,
                 contentDescription = producto.nombre,
@@ -41,45 +50,85 @@ fun ProductCard(
                 contentScale = ContentScale.Crop
             )
 
+            Spacer(modifier = Modifier.height(10.dp))
 
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
+            Text(producto.nombre)
 
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = producto.nombre
-            )
+            Text(producto.descripcion)
 
+            Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
+            Text("Antes: S/. ${producto.precio_original}")
 
+            Text("Oferta: S/. ${producto.precio_descuento}")
 
-            Text(
-                text = producto.descripcion
-            )
+            Text("Disponible: ${producto.cantidad_disponible}")
 
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
 
+                Button(
+                    onClick = {
 
-            Text(
-                text = "Antes: S/ ${producto.precio_original}"
-            )
+                        if (cantidad > 1) {
+                            cantidad--
+                        }
 
+                    }
+                ) {
 
-            Text(
-                text = "Oferta: S/ ${producto.precio_descuento}"
-            )
+                    Text("-")
 
+                }
 
-            Text(
-                text = "Disponible: ${producto.cantidad_disponible}"
-            )
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = cantidad.toString(),
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Button(
+                    onClick = {
+
+                        if (cantidad < producto.cantidad_disponible) {
+                            cantidad++
+                        }
+
+                    }
+                ) {
+
+                    Text("+")
+
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+
+                    onAgregarCarrito(
+                        producto.id,
+                        cantidad
+                    )
+
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Text("Agregar al carrito")
+
+            }
 
         }
 

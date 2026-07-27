@@ -194,15 +194,21 @@ fun HomeScreen(
 
                         ProductCard(
                             producto = producto,
-                            onClick = {
 
+                            onClick = {
                                 navController.navigate(
                                     "product_detail/${producto.id}"
                                 )
+                            },
 
+                            onAgregarCarrito = { productoId, cantidad ->
+                                viewModel.agregarAlCarrito(
+                                    productoId,
+                                    cantidad
+                                )
                             }
-                        )
 
+                        )
                     }
 
                 }

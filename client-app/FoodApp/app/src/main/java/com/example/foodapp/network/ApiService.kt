@@ -44,7 +44,6 @@ interface ApiService {
     @GET("carrito")
     suspend fun obtenerCarrito(): Response<CarritoResponse>
 
-
     @DELETE("carrito/detalle/{detalleId}")
     suspend fun eliminarProductoCarrito(
         @Path("detalleId") detalleId: Int
@@ -60,4 +59,5 @@ interface ApiService {
     suspend fun crearPedido(
         @Body request: CrearPedidoRequest
     ): Response<Pedido>
+
 }
