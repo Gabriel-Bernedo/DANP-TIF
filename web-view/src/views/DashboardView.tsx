@@ -7,6 +7,7 @@ import {
 import { Download, TrendingUp, ShoppingBag, Calendar, Package, Activity, DollarSign } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 export function DashboardView() {
   const { 
@@ -19,7 +20,7 @@ export function DashboardView() {
     refresh 
   } = useDashboardViewModel();
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (!estadisticas) return;
     
     const doc = new jsPDF();
@@ -40,40 +41,67 @@ export function DashboardView() {
         currentY += 6;
     }
 
+    // Capturar Gráficos
+    const generateChartImage = async (id: string) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
+      return canvas.toDataURL('image/png');
+    };
+
+    const imgVentas = await generateChartImage('chart-ventas');
+    const imgCategorias = await generateChartImage('chart-categorias');
+    const imgTopProductos = await generateChartImage('chart-top-productos');
+
+    if (imgVentas) {
+      doc.addImage(imgVentas, 'PNG', 14, currentY + 5, 180, 70);
+      currentY += 80;
+    }
+
+    if (imgCategorias && imgTopProductos) {
+      doc.addImage(imgCategorias, 'PNG', 14, currentY, 85, 60);
+      doc.addImage(imgTopProductos, 'PNG', 105, currentY, 90, 60);
+      currentY += 65;
+    }
+
+    // Tablas de Datos (En nuevas páginas si es necesario)
+    doc.addPage();
+    let finalY = 20;
+
     doc.setFontSize(16);
-    doc.text('Ventas Temporales', 14, currentY + 10);
+    doc.text('Datos Detallados: Ventas Temporales', 14, finalY);
     autoTable(doc, {
-      startY: currentY + 15,
+      startY: finalY + 5,
       head: [['Fecha', 'Total ($)']],
       body: (estadisticas.ventasTemporales || []).map(v => [v.fecha, (v.total || 0).toFixed(2)]),
     });
 
-    const finalY = (doc as any).lastAutoTable.finalY || 60;
-    
+    finalY = (doc as any).lastAutoTable.finalY || finalY + 20;
+
     doc.setFontSize(16);
-    doc.text('Productos Más Vendidos', 14, finalY + 15);
+    doc.text('Top Productos Más Vendidos', 14, finalY + 15);
     autoTable(doc, {
       startY: finalY + 20,
       head: [['ID Producto', 'Nombre', 'Cantidad Vendida']],
       body: (estadisticas.productosMasVendidos || []).map(p => [p.producto_id, p.nombre, p.cantidad_vendida]),
     });
 
-    const finalY2 = (doc as any).lastAutoTable.finalY || finalY + 20;
+    finalY = (doc as any).lastAutoTable.finalY || finalY + 20;
 
     doc.setFontSize(16);
-    doc.text('Productos Menos Vendidos', 14, finalY2 + 15);
+    doc.text('Productos Menos Vendidos', 14, finalY + 15);
     autoTable(doc, {
-      startY: finalY2 + 20,
+      startY: finalY + 20,
       head: [['ID Producto', 'Nombre', 'Cantidad Vendida']],
       body: (estadisticas.productosMenosVendidos || []).map(p => [p.producto_id, p.nombre, p.cantidad_vendida]),
     });
 
-    const finalY3 = (doc as any).lastAutoTable.finalY || finalY2 + 20;
+    finalY = (doc as any).lastAutoTable.finalY || finalY + 20;
 
     doc.setFontSize(16);
-    doc.text('Ventas por Categoría', 14, finalY3 + 15);
+    doc.text('Ventas por Categoría', 14, finalY + 15);
     autoTable(doc, {
-      startY: finalY3 + 20,
+      startY: finalY + 20,
       head: [['Categoría', 'Cantidad Vendida']],
       body: (estadisticas.ventasPorCategoria || []).map(c => [c.nombre, c.cantidad]),
     });
@@ -188,7 +216,7 @@ export function DashboardView() {
               {/* Gráfico de Ventas Temporales */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-800 mb-6">Ventas en el Tiempo</h3>
-                <div className="h-72">
+                <div className="h-72" id="chart-ventas">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={estadisticas.ventasTemporales} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
@@ -214,7 +242,7 @@ export function DashboardView() {
               {/* Gráfico de Productos Más Vendidos */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-800 mb-6">Top Productos Más Vendidos</h3>
-                <div className="h-72">
+                <div className="h-72" id="chart-top-productos">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={estadisticas.productosMasVendidos} margin={{ top: 5, right: 20, left: 0, bottom: 5 }} layout="vertical">
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f3f4f6" />
@@ -236,7 +264,7 @@ export function DashboardView() {
               {/* Gráfico de Ventas por Categoría */}
               <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <h3 className="text-lg font-bold text-gray-800 mb-6">Distribución por Categorías</h3>
-                <div className="h-72">
+                <div className="h-72" id="chart-categorias">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
