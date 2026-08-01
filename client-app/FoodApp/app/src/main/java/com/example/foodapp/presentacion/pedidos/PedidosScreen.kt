@@ -5,16 +5,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PedidosScreen(
     navController: NavController,
@@ -26,106 +27,169 @@ fun PedidosScreen(
 
 
 
-    Column(
+    Scaffold(
 
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        topBar = {
 
-    ) {
+            TopAppBar(
 
+                title = {
 
+                    Text(
+                        text = "📦 Mis pedidos"
+                    )
 
-        Text(
+                }
 
-            text = "Mis pedidos",
+            )
 
-            style = MaterialTheme.typography.headlineMedium
+        }
 
-        )
-
-
-
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
+    ) { padding ->
 
 
 
+        Column(
 
-        when {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+
+        ) {
 
 
-            uiState.isLoading -> {
+
+            when {
 
 
-                Box(
 
-                    modifier = Modifier.fillMaxSize()
+                uiState.isLoading -> {
 
-                ){
 
-                    CircularProgressIndicator()
+                    Box(
+
+                        modifier = Modifier.fillMaxSize(),
+
+                        contentAlignment = Alignment.Center
+
+                    ){
+
+                        CircularProgressIndicator()
+
+                    }
+
 
                 }
 
 
-            }
+
+
+                uiState.error != null -> {
+
+
+                    Text(
+
+                        text = uiState.error ?: "Error",
+
+                        color = MaterialTheme.colorScheme.error
+
+                    )
+
+
+                }
 
 
 
 
-            uiState.error != null -> {
+                uiState.pedidos.isEmpty() -> {
 
 
-                Text(
+                    Box(
 
-                    text = uiState.error ?: "Error"
+                        modifier = Modifier.fillMaxSize(),
 
-                )
+                        contentAlignment = Alignment.Center
 
-
-            }
-
+                    ){
 
 
+                        Column(
+
+                            horizontalAlignment = Alignment.CenterHorizontally
+
+                        ){
 
 
-            uiState.pedidos.isEmpty() -> {
+                            Text(
+
+                                text = "📦",
+
+                                fontSize = 60.sp
+
+                            )
 
 
-                Text(
+                            Spacer(
 
-                    text = "No tienes pedidos todavía"
+                                modifier = Modifier.height(12.dp)
 
-                )
-
-
-            }
+                            )
 
 
+                            Text(
+
+                                text = "No tienes pedidos todavía",
+
+                                style = MaterialTheme.typography.titleMedium
+
+                            )
 
 
-            else -> {
-
-
-                LazyColumn {
-
-
-                    items(uiState.pedidos){ pedido ->
-
-
-
-                        PedidoCard(
-                            pedido = pedido
-                        )
-
+                        }
 
 
                     }
 
 
                 }
+
+
+
+
+                else -> {
+
+
+                    LazyColumn(
+
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+
+                    ){
+
+
+
+                        items(uiState.pedidos){ pedido ->
+
+
+
+                            PedidoCard(
+
+                                pedido = pedido
+
+                            )
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+                }
+
 
 
             }
@@ -146,7 +210,6 @@ fun PedidosScreen(
 
 
 
-
 @Composable
 fun PedidoCard(
 
@@ -159,10 +222,13 @@ fun PedidoCard(
     Card(
 
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .fillMaxWidth(),
 
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(20.dp),
+
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 5.dp
+        )
 
     ){
 
@@ -188,7 +254,9 @@ fun PedidoCard(
 
 
             Spacer(
+
                 modifier = Modifier.height(8.dp)
+
             )
 
 
@@ -218,16 +286,38 @@ fun PedidoCard(
 
 
             Spacer(
-                modifier = Modifier.height(10.dp)
+
+                modifier = Modifier.height(12.dp)
+
+            )
+
+
+
+            HorizontalDivider()
+
+
+
+            Spacer(
+
+                modifier = Modifier.height(12.dp)
+
             )
 
 
 
             Text(
 
-                text = "Productos:",
+                text = "Productos",
 
                 style = MaterialTheme.typography.titleMedium
+
+            )
+
+
+
+            Spacer(
+
+                modifier = Modifier.height(8.dp)
 
             )
 
@@ -237,18 +327,39 @@ fun PedidoCard(
 
 
 
-                Text(
+                Row(
 
-                    text =
-                        "- ${detalle.productos.nombre} x${detalle.cantidad}"
+                    modifier = Modifier.fillMaxWidth(),
 
-                )
+                    horizontalArrangement = Arrangement.SpaceBetween
+
+                ){
 
 
-                Text(
 
-                    text =
-                        "  Subtotal: S/ ${detalle.subtotal}"
+                    Text(
+
+                        text = "${detalle.productos.nombre} x${detalle.cantidad}"
+
+                    )
+
+
+
+                    Text(
+
+                        text = "S/ ${detalle.subtotal}"
+
+                    )
+
+
+
+                }
+
+
+
+                Spacer(
+
+                    modifier = Modifier.height(4.dp)
 
                 )
 
@@ -260,7 +371,21 @@ fun PedidoCard(
 
 
             Spacer(
-                modifier = Modifier.height(10.dp)
+
+                modifier = Modifier.height(12.dp)
+
+            )
+
+
+
+            HorizontalDivider()
+
+
+
+            Spacer(
+
+                modifier = Modifier.height(8.dp)
+
             )
 
 
@@ -269,7 +394,7 @@ fun PedidoCard(
 
                 text = "Total: S/ ${pedido.total}",
 
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleLarge
 
             )
 

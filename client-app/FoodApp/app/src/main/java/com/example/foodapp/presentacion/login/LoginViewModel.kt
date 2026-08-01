@@ -41,28 +41,62 @@ class LoginViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
 
-                    val token = response.body()?.access_token
-                    if (token != null) {
+
+                    val body = response.body()
+
+
+                    val token = body?.access_token
+
+
+                    val usuario = body?.usuario
+
+
+
+                    if (token != null && usuario != null) {
+
+
+                        // Guardar token
 
                         tokenManager.saveToken(token)
+
+
+                        // Guardar datos del usuario
+
+                        tokenManager.saveUser(usuario)
+
+
 
                         Log.d(
                             "TOKEN",
                             "Token guardado correctamente"
                         )
 
+
+                        Log.d(
+                            "USER",
+                            "Usuario guardado: ${usuario.nombre} ${usuario.apellido}"
+                        )
+
+
                     }
-                    Log.d("LOGIN", "Login exitoso")
-                    Log.d("LOGIN", response.body().toString())
+
+
+
+                    Log.d(
+                        "LOGIN",
+                        "Login exitoso"
+                    )
+
+
+                    Log.d(
+                        "LOGIN",
+                        body.toString()
+                    )
+
 
                     _loginSuccess.value = true
 
-                } else {
 
-                    Log.d("LOGIN", "Error: ${response.code()}")
-                    Log.d("LOGIN", response.errorBody()?.string() ?: "")
-
-                    _error.value = "Correo o contraseña incorrectos"
 
                 }
 

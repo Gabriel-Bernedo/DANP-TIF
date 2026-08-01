@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 
@@ -24,13 +25,10 @@ fun CategoryItem(
     Card(
 
         modifier = Modifier
-
-            .size(100.dp)
-
+            .width(120.dp)
+            .height(110.dp)
             .clickable {
-
                 onClick()
-
             },
 
 
@@ -82,7 +80,13 @@ fun CategoryItem(
 
                 text = texto,
 
-                style = MaterialTheme.typography.bodyMedium
+                modifier = Modifier.fillMaxWidth(),
+
+                style = MaterialTheme.typography.bodyMedium,
+
+                textAlign = TextAlign.Center,
+
+                maxLines = 2
 
             )
 
@@ -99,11 +103,8 @@ fun CategoryItem(
 
 
 private fun getCategoryEmoji(
-
     categoria:String
-
 ):String{
-
 
     return when(categoria.lowercase()){
 
@@ -115,9 +116,18 @@ private fun getCategoryEmoji(
 
         "panadería" -> "🥖"
 
+        "frutas y verduras" -> "🍎"
+
+        "lácteos" -> "🥛"
+
+        "carnes" -> "🥩"
+
+        "snacks" -> "🍿"
+
+        "todas" -> "🛒"
+
         else -> "🍽️"
 
     }
-
 
 }

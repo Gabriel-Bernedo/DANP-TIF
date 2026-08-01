@@ -104,40 +104,24 @@ fun HomeScreen(
             // CATEGORIAS
 
             item {
-
                 Text(
-
                     text = "Categorías",
-
                     style = MaterialTheme.typography.titleLarge
-
                 )
-
-
             }
 
             item {
-
                 LazyRow(
-
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
-
                 ){
-
                     item {
-
                         CategoryItem(
-
                             texto = "Todas",
-
                             onClick = {
-
                                 viewModel.mostrarTodos()
                             }
                         )
-
                     }
-
                     items(uiState.categorias){ categoria ->
                         CategoryItem(
                             texto = categoria.nombre,
@@ -150,7 +134,6 @@ fun HomeScreen(
                         )
                     }
                 }
-
             }
 
             // PRODUCTOS TITULO
